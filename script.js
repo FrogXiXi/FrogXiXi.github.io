@@ -48,8 +48,8 @@
   /* ====== 碰撞检测 ====== */
   // placed: [{x,y,w,h}, ...]  全部用百分比
   var placed = [];
-  // 中央青蛙保留区
-  placed.push({ x: 38, y: 35, w: 24, h: 30 });
+  // 中央青蛙 + 荷叶座位保留区（荷叶比青蛙大150%）
+  placed.push({ x: 32, y: 30, w: 36, h: 40 });
 
   function overlaps(r) {
     for (var i = 0; i < placed.length; i++) {
@@ -96,10 +96,19 @@
     return el;
   }
 
+  /* ====== 鱼朝向辅助：确保面朝游动方向 ====== */
+  // fish.png 默认朝右，scaleX(1)=右，scaleX(-1)=左
+  function setFishDir(fish, fromX, toX) {
+    if (toX === fromX) return; // 没移动，不改方向
+    var d = toX > fromX ? 1 : -1;
+    fish.style.transform = 'scaleX(' + d + ')';
+    fish.dataset.dir = d;
+  }
+
   /* ==========================================
-     荷叶 ×5
+     荷叶 ×4
      ========================================== */
-  for (var li = 0; li < 5; li++) {
+  for (var li = 0; li < 4; li++) {
     var lw = rand(10, 15);
     var lh = lw * 0.6;  // 近似高宽比
     var lpos = findPos(lw, lh, 6);
@@ -149,18 +158,16 @@
           if (fish.dataset.hiding === '1' && parseInt(fish.dataset.hideGrass) === grassIdx) {
             fish.dataset.hiding = '0';
             fish.classList.remove('hiding');
-            var curDir = parseInt(fish.dataset.dir);
-            curDir = -curDir;
-            fish.style.transform = 'scaleX(' + curDir + ')';
-            fish.dataset.dir = curDir;
             fish.classList.add('fast');
             var cx = parseFloat(fish.style.left);
             var cy = parseFloat(fish.style.top);
-            var nx = cx + curDir * rand(15, 25);
+            var escDir = Math.random() > 0.5 ? 1 : -1;
+            var nx = cx + escDir * rand(15, 25);
             var ny = cy + rand(-6, 6);
             nx = Math.max(14, Math.min(80, nx));
             ny = Math.max(16, Math.min(80, ny));
             if (!pointInEllipse(nx, ny)) { nx = 50 + (nx > 50 ? -10 : 10); ny = 50; }
+            setFishDir(fish, cx, nx);
             fish.style.left = nx + '%';
             fish.style.top  = ny + '%';
             setTimeout(function() { fish.classList.remove('fast'); }, 1600);
@@ -226,19 +233,16 @@
         if (el.dataset.hiding === '1' || el.dataset.hiding === 'swimming') {
           el.dataset.hiding = '0';
           el.classList.remove('hiding');
-          var curDir = parseInt(el.dataset.dir);
-          curDir = -curDir;
-          el.style.transform = 'scaleX(' + curDir + ')';
-          el.dataset.dir = curDir;
           el.classList.add('fast');
           var cx = parseFloat(el.style.left);
           var cy = parseFloat(el.style.top);
-          var nx = cx + curDir * rand(15, 25);
+          var curDir = parseInt(el.dataset.dir);
+          var nx = cx + (-curDir) * rand(15, 25);
           var ny = cy + rand(-6, 6);
-          // 椭圆约束
           nx = Math.max(14, Math.min(80, nx));
           ny = Math.max(16, Math.min(80, ny));
           if (!pointInEllipse(nx, ny)) { nx = 50 + (nx > 50 ? -10 : 10); ny = 50; }
+          setFishDir(el, cx, nx);
           el.style.left = nx + '%';
           el.style.top  = ny + '%';
           setTimeout(function() { el.classList.remove('fast'); }, 1600);
@@ -250,8 +254,6 @@
         // 如果鱼在池塘边缘附近，先回头
         if (!pointInEllipse(curX + curDir * 5, parseFloat(el.style.top))) {
           curDir = -curDir;
-          el.style.transform = 'scaleX(' + curDir + ')';
-          el.dataset.dir = curDir;
         }
         // 加速：沿当前朝向移动
         el.classList.add('fast');
@@ -261,6 +263,7 @@
         newX = Math.max(14, Math.min(80, newX));
         newY = Math.max(16, Math.min(80, newY));
         if (!pointInEllipse(newX, newY)) { newX = 50; newY = 50; }
+        setFishDir(el, curX, newX);
         el.style.left = newX + '%';
         el.style.top  = newY + '%';
         setTimeout(function() { el.classList.remove('fast'); }, 1600);
@@ -283,9 +286,7 @@
 
     // 先朝向水草方向
     var curX = parseFloat(fish.style.left);
-    var newDir = gx > curX ? 1 : -1;
-    fish.style.transform = 'scaleX(' + newDir + ')';
-    fish.dataset.dir = newDir;
+    setFishDir(fish, curX, gx);
 
     // 游到水草位置（正常速度，8s transition）
     fish.style.left = gx + '%';
@@ -323,9 +324,7 @@
       if (!pointInEllipse(curX, curY)) {
         var nx2 = curX + (50 - curX) * 0.5;
         var ny2 = curY + (50 - curY) * 0.5;
-        var newDir2 = nx2 > curX ? 1 : -1;
-        fish.style.transform = 'scaleX(' + newDir2 + ')';
-        fish.dataset.dir = newDir2;
+        setFishDir(fish, curX, nx2);
         fish.style.left = nx2 + '%';
         fish.style.top  = ny2 + '%';
         return;
@@ -343,18 +342,12 @@
 
       // 确保新位置在椭圆内
       if (!pointInEllipse(nx, ny)) {
-        // 缩短距离重试
         nx = curX + dx * 0.3;
         ny = curY + dy * 0.3;
         if (!pointInEllipse(nx, ny)) { nx = curX; ny = curY; }
       }
 
-      var newDir = (nx - curX) > 0 ? 1 : -1;
-      if (newDir !== curDir) {
-        fish.style.transform = 'scaleX(' + newDir + ')';
-        fish.dataset.dir = newDir;
-      }
-
+      setFishDir(fish, curX, nx);
       fish.style.left = nx + '%';
       fish.style.top  = ny + '%';
     });
@@ -366,15 +359,23 @@
   /* ==========================================
      思考气泡 — 箭头切换想法
      ========================================== */
-  var thinkIdeas = ['🐇', '🌳', '🌸', '⭐', '🍄'];
+  var thinkIdeas = [
+    { icon: '🐇', href: '#' },
+    { icon: '🌳', href: '#' },
+    { icon: '🌸', href: '#' },
+    { icon: '⭐', href: '#' },
+    { icon: '🍄', href: '#' }
+  ];
   var thinkIdx = 0;
   var thinkIconEl = document.getElementById('thinkIcon');
+  var thinkLink  = document.getElementById('thinkLink');
   var arrowLeft  = document.getElementById('arrowLeft');
   var arrowRight = document.getElementById('arrowRight');
 
   function updateArrows() {
     arrowLeft.classList.toggle('disabled', thinkIdx <= 0);
     arrowRight.classList.toggle('disabled', thinkIdx >= thinkIdeas.length - 1);
+    thinkLink.href = thinkIdeas[thinkIdx].href;
   }
 
   function switchIdea(newIdx) {
@@ -384,7 +385,8 @@
     void thinkIconEl.offsetWidth;
     thinkIconEl.classList.add('switching');
     setTimeout(function() {
-      thinkIconEl.textContent = thinkIdeas[thinkIdx];
+      thinkIconEl.textContent = thinkIdeas[thinkIdx].icon;
+      thinkLink.href = thinkIdeas[thinkIdx].href;
     }, 120);
     thinkIconEl.addEventListener('animationend', function h() {
       thinkIconEl.classList.remove('switching');
