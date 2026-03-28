@@ -191,6 +191,21 @@
     });
   }
 
+  function moveFishTo(fish, fromX, target, fastDuration) {
+    if (fastDuration) {
+      fish.classList.add('fast');
+      if (fish._fastTimer) clearTimeout(fish._fastTimer);
+      fish._fastTimer = setTimeout(function() {
+        fish.classList.remove('fast');
+        fish._fastTimer = null;
+      }, fastDuration);
+    }
+
+    setFishDir(fish, fromX, target.x);
+    fish.style.left = target.x + '%';
+    fish.style.top  = target.y + '%';
+  }
+
   function releaseFishFromHide(fish, deltaX, deltaY) {
     var grassId = fish.dataset.hideGrass;
     var fromX = parseFloat(fish.style.left);
@@ -200,13 +215,9 @@
     fish.dataset.hiding = '0';
     fish.classList.remove('hiding');
     fish.classList.remove('hiding-group');
-    fish.classList.add('fast');
-    setFishDir(fish, fromX, target.x);
-    fish.style.left = target.x + '%';
-    fish.style.top  = target.y + '%';
+    moveFishTo(fish, fromX, target, 1600);
 
     if (grassId) updateGrassHideLayout(grassId);
-    setTimeout(function() { fish.classList.remove('fast'); }, 1600);
   }
 
   /* ====== 创建装饰元素 ====== */
@@ -365,13 +376,9 @@
           curDir = -curDir;
         }
         // 加速：沿当前朝向移动
-        el.classList.add('fast');
         var curY = parseFloat(el.style.top);
         var clickTarget = resolveFishTarget(el, curX, curY, curDir * rand(15, 30), rand(-8, 8));
-        setFishDir(el, curX, clickTarget.x);
-        el.style.left = clickTarget.x + '%';
-        el.style.top  = clickTarget.y + '%';
-        setTimeout(function() { el.classList.remove('fast'); }, 1600);
+        moveFishTo(el, curX, clickTarget, 1600);
       });
     })(fish);
   }
@@ -428,37 +435,26 @@
       var curX = parseFloat(fish.style.left);
       var curY = parseFloat(fish.style.top);
       var curDir = parseInt(fish.dataset.dir);
+      var size = getFishSize(fish);
 
       // 如果当前位置不在椭圆内，游回中心方向
-      if (!pointInEllipse(curX, curY)) {
-        var nx2 = curX + (50 - curX) * 0.5;
-        var ny2 = curY + (50 - curY) * 0.5;
-        setFishDir(fish, curX, nx2);
-        fish.style.left = nx2 + '%';
-        fish.style.top  = ny2 + '%';
+      if (!insideEllipse(curX, curY, size.w, size.h)) {
+        var recoverTarget = resolveFishTarget(fish, curX, curY, 50 - curX, 50 - curY);
+        moveFishTo(fish, curX, recoverTarget);
         return;
       }
 
       // 如果在边缘附近，强制转向
-      if (!pointInEllipse(curX + curDir * 10, curY)) curDir = -curDir;
+      var probeTarget = resolveFishTarget(fish, curX, curY, curDir * 10, 0);
+      if (probeTarget.x === curX && probeTarget.y === curY) curDir = -curDir;
 
       var dx = rand(8, 22) * (Math.random() > 0.3 ? curDir : -curDir);
       var dy = rand(-6, 6);
-      var nx = curX + dx;
-      var ny = curY + dy;
-      nx = Math.max(14, Math.min(80, nx));
-      ny = Math.max(16, Math.min(80, ny));
-
-      // 确保新位置在椭圆内
-      if (!pointInEllipse(nx, ny)) {
-        nx = curX + dx * 0.3;
-        ny = curY + dy * 0.3;
-        if (!pointInEllipse(nx, ny)) { nx = curX; ny = curY; }
+      var target = resolveFishTarget(fish, curX, curY, dx, dy);
+      if (target.x === curX && target.y === curY) {
+        target = resolveFishTarget(fish, curX, curY, (50 - curX) * 0.45, (50 - curY) * 0.45);
       }
-
-      setFishDir(fish, curX, nx);
-      fish.style.left = nx + '%';
-      fish.style.top  = ny + '%';
+      moveFishTo(fish, curX, target);
     });
   }
   // 每 3 秒移动一次
