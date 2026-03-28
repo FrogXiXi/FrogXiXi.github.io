@@ -83,11 +83,11 @@ body {
     max-height: calc(100vh - 100px);
     min-height: 280px;
   }
-  /* 竖屏放大交互元素便于点击 */
-  .el-grass { transform: scale(1.5); transform-origin: bottom center; }
-  .el-fish  { transform: scale(1.45); }
-  .el-flower { transform: scale(1.5); }
-  .el-lily  { transform: scale(1.3); }
+  /* 竖屏放大交互元素便于点击（用 scale 属性，不覆盖 transform） */
+  .el-grass { scale: 1.5; }
+  .el-fish  { scale: 1.45; }
+  .el-flower { scale: 1.5; }
+  .el-lily  { scale: 1.3; }
   .think-bubble { width: clamp(110px, 24%, 180px); }
   .think-arrow { width: 26px; height: 26px; }
   .think-link { width: 42px; height: 42px; }

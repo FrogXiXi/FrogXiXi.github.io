@@ -30,14 +30,15 @@
   function updateEllipse() {
     var isPortrait = window.innerHeight > window.innerWidth;
     if (isPortrait) {
-      ellA = 32; // 竖版横向更窄
-      ellB = 36; // 竖版纵向更高
+      ellA = 38; // 竖版横向
+      ellB = 42; // 竖版纵向
     } else {
-      ellA = 36; // 横版横向更宽
-      ellB = 34;
+      ellA = 42; // 横版横向
+      ellB = 38; // 横版纵向
     }
   }
   updateEllipse();
+  window.addEventListener('resize', updateEllipse);
 
   function insideEllipse(x, y, w, h) {
     // 检测矩形4个角 + 中心是否都在椭圆内
@@ -377,7 +378,7 @@
      思考气泡 — 箭头切换想法
      ========================================== */
   var thinkIdeas = [
-    { icon: '♥', href: 'https://www.bilibili.com' },
+    { icon: '❤', href: 'https://www.bilibili.com' },
     { icon: '🐇', href: '#' },
     { icon: '🌳', href: '#' },
     { icon: '🌸', href: '#' },
