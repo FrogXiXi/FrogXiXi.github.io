@@ -275,21 +275,43 @@ body {
   opacity: 1; pointer-events: auto;
 }
 .think-img { width: 100%; height: auto; display: block; }
-.think-btns {
+.think-content {
   position: absolute;
-  top: 18%; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 10px; justify-content: center;
+  top: 15%; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 4px; align-items: center; justify-content: center;
+  width: 80%;
 }
-.tbtn {
-  display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; border-radius: 6px;
-  background: rgba(255,255,255,0.75);
-  text-decoration: none; font-size: 1.1rem;
-  border: 2px solid rgba(140,201,161,0.35);
-  transition: transform 0.2s, background 0.2s;
+.think-arrow {
+  width: 22px; height: 22px; object-fit: contain;
   pointer-events: auto;
+  transition: transform 0.15s ease, opacity 0.15s;
+  flex-shrink: 0;
 }
-.tbtn:hover { transform: scale(1.15); background: rgba(140,201,161,0.3); }
+.think-arrow:hover { transform: scale(1.2); }
+.think-arrow:active { transform: scale(0.9); }
+.think-arrow.disabled { opacity: 0.3; }
+.think-arrow.disabled:hover { transform: scale(1); }
+.think-arrow.click-feedback { animation: arrowBounce 0.3s ease; }
+@keyframes arrowBounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.75); }
+  100% { transform: scale(1); }
+}
+.think-icon {
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  line-height: 1;
+  user-select: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.think-icon.switching {
+  animation: iconSwitch 0.3s ease;
+}
+@keyframes iconSwitch {
+  0%   { opacity: 1; transform: scale(1); }
+  40%  { opacity: 0; transform: scale(0.5); }
+  60%  { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
 
 /* ==========================================================
    水波纹 + 像素泡泡
@@ -336,7 +358,7 @@ body {
   .pond { width: 99vw; height: calc(100vh - 70px); min-height: 320px; max-height: 520px; }
   .frog-wrap { width: clamp(48px, 20%, 85px); }
   .think-bubble { width: clamp(70px, 26%, 120px); }
-  .tbtn { width: 28px; height: 28px; font-size: 0.9rem; }
+  .think-arrow { width: 16px; height: 16px; }
   .edge { display: none; }
   .pond { border-radius: 8px; }
 }

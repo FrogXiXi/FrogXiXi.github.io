@@ -102,7 +102,7 @@
   for (var li = 0; li < 5; li++) {
     var lw = rand(10, 15);
     var lh = lw * 0.6;  // 近似高宽比
-    var lpos = findPos(lw, lh);
+    var lpos = findPos(lw, lh, 6);
     var lp = makeEl('img', 'el-lily', 'images/lily_pad.png', lw);
     lp.style.left = lpos.x + '%';
     lp.style.top  = lpos.y + '%';
@@ -137,15 +137,37 @@
     gr.style.animationDelay = rand(0, 4).toFixed(1) + 's';
     elBox.appendChild(gr);
 
-    (function(el) {
+    (function(el, grassIdx) {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
         el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
         el.addEventListener('animationend', function h() {
           el.classList.remove('shake'); el.removeEventListener('animationend', h);
         });
+        // 释放躲在这棵水草下的鱼
+        fishes.forEach(function(fish) {
+          if (fish.dataset.hiding === '1' && parseInt(fish.dataset.hideGrass) === grassIdx) {
+            fish.dataset.hiding = '0';
+            fish.classList.remove('hiding');
+            var curDir = parseInt(fish.dataset.dir);
+            curDir = -curDir;
+            fish.style.transform = 'scaleX(' + curDir + ')';
+            fish.dataset.dir = curDir;
+            fish.classList.add('fast');
+            var cx = parseFloat(fish.style.left);
+            var cy = parseFloat(fish.style.top);
+            var nx = cx + curDir * rand(15, 25);
+            var ny = cy + rand(-6, 6);
+            nx = Math.max(14, Math.min(80, nx));
+            ny = Math.max(16, Math.min(80, ny));
+            if (!pointInEllipse(nx, ny)) { nx = 50 + (nx > 50 ? -10 : 10); ny = 50; }
+            fish.style.left = nx + '%';
+            fish.style.top  = ny + '%';
+            setTimeout(function() { fish.classList.remove('fast'); }, 1600);
+          }
+        });
       });
-    })(gr);
+    })(gr, gi);
   }
 
   /* ==========================================
@@ -200,8 +222,8 @@
     (function(el) {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
-        // 如果在躲藏中，点击出来
-        if (el.dataset.hiding === '1') {
+        // 如果在躲藏中或正在游向水草，点击出来
+        if (el.dataset.hiding === '1' || el.dataset.hiding === 'swimming') {
           el.dataset.hiding = '0';
           el.classList.remove('hiding');
           var curDir = parseInt(el.dataset.dir);
@@ -246,17 +268,38 @@
     })(fish);
   }
 
-  // 让鱼躲到水草下面
+  // 让鱼躲到水草下面：先游过去，到达后再变透明
   function hideUnderGrass(fish) {
     var grasses = elBox.querySelectorAll('.el-grass');
     if (grasses.length === 0) return false;
     var g = grasses[randInt(0, grasses.length - 1)];
     var gx = parseFloat(g.style.left);
     var gy = parseFloat(g.style.top);
-    fish.dataset.hiding = '1';
-    fish.classList.add('hiding');
+
+    // 记录目标水草引用
+    fish.dataset.hideGrass = Array.prototype.indexOf.call(
+      elBox.querySelectorAll('.el-grass'), g
+    );
+
+    // 先朝向水草方向
+    var curX = parseFloat(fish.style.left);
+    var newDir = gx > curX ? 1 : -1;
+    fish.style.transform = 'scaleX(' + newDir + ')';
+    fish.dataset.dir = newDir;
+
+    // 游到水草位置（正常速度，8s transition）
     fish.style.left = gx + '%';
     fish.style.top  = gy + '%';
+
+    // 游到之后再变透明（延迟等 transition 完成）
+    fish.dataset.hiding = 'swimming'; // 正在游向水草
+    setTimeout(function() {
+      // 到达后变透明
+      if (fish.dataset.hiding === 'swimming') {
+        fish.dataset.hiding = '1';
+        fish.classList.add('hiding');
+      }
+    }, 8200);
     return true;
   }
 
@@ -264,7 +307,7 @@
   function moveFish() {
     fishes.forEach(function(fish) {
       if (fish.classList.contains('fast')) return;
-      if (fish.dataset.hiding === '1') return; // 躲着不动
+      if (fish.dataset.hiding === '1' || fish.dataset.hiding === 'swimming') return;
 
       // 随机概率躲到水草下
       if (Math.random() < 0.1) {
@@ -319,6 +362,66 @@
   // 每 5-8 秒移动一次
   setInterval(moveFish, 6000);
   setTimeout(moveFish, 2000); // 初始延迟后开始
+
+  /* ==========================================
+     思考气泡 — 箭头切换想法
+     ========================================== */
+  var thinkIdeas = ['🐇', '🌳', '🌸', '⭐', '🍄'];
+  var thinkIdx = 0;
+  var thinkIconEl = document.getElementById('thinkIcon');
+  var arrowLeft  = document.getElementById('arrowLeft');
+  var arrowRight = document.getElementById('arrowRight');
+
+  function updateArrows() {
+    arrowLeft.classList.toggle('disabled', thinkIdx <= 0);
+    arrowRight.classList.toggle('disabled', thinkIdx >= thinkIdeas.length - 1);
+  }
+
+  function switchIdea(newIdx) {
+    if (newIdx < 0 || newIdx >= thinkIdeas.length) return false;
+    thinkIdx = newIdx;
+    thinkIconEl.classList.remove('switching');
+    void thinkIconEl.offsetWidth;
+    thinkIconEl.classList.add('switching');
+    setTimeout(function() {
+      thinkIconEl.textContent = thinkIdeas[thinkIdx];
+    }, 120);
+    thinkIconEl.addEventListener('animationend', function h() {
+      thinkIconEl.classList.remove('switching');
+      thinkIconEl.removeEventListener('animationend', h);
+    });
+    updateArrows();
+    return true;
+  }
+
+  function arrowFeedback(el) {
+    el.classList.remove('click-feedback');
+    void el.offsetWidth;
+    el.classList.add('click-feedback');
+    el.addEventListener('animationend', function h() {
+      el.classList.remove('click-feedback');
+      el.removeEventListener('animationend', h);
+    });
+  }
+
+  arrowLeft.addEventListener('click', function(e) {
+    e.stopPropagation();
+    arrowFeedback(arrowLeft);
+    if (!switchIdea(thinkIdx - 1)) {
+      // 已经是第一个，震动反馈
+      arrowLeft.style.animation = 'none'; void arrowLeft.offsetWidth;
+    }
+  });
+
+  arrowRight.addEventListener('click', function(e) {
+    e.stopPropagation();
+    arrowFeedback(arrowRight);
+    if (!switchIdea(thinkIdx + 1)) {
+      arrowRight.style.animation = 'none'; void arrowRight.offsetWidth;
+    }
+  });
+
+  updateArrows();
 
   /* ==========================================
      青蛙点击：跳跃 + 切换思考气泡
