@@ -122,7 +122,7 @@
   /* ==========================================
      荷叶 ×4
      ========================================== */
-  for (var li = 0; li < 4; li++) {
+  for (var li = 0; li < 2; li++) {
     var lw = rand(10, 14);
     var lh = lw * 0.6;  // 近似高宽比
     var lpos = findPos(lw, lh, 10);
@@ -149,7 +149,7 @@
   /* ==========================================
      水草 PNG ×6
      ========================================== */
-  for (var gi = 0; gi < 6; gi++) {
+  for (var gi = 0; gi < 7; gi++) {
     var gw = rand(5, 9);
     var gh = gw * 1.8;
     var gpos = findPos(gw, gh);
@@ -221,7 +221,7 @@
   var fishes = [];
   var grassEls = document.querySelectorAll('.el-grass');
 
-  for (var fii = 0; fii < 4; fii++) {
+  for (var fii = 0; fii < 5; fii++) {
     var fishW = rand(5, 7.5);
     var fishH = fishW * 0.6;
     var fishPos = findPos(fishW, fishH);
@@ -314,7 +314,7 @@
         fish.dataset.hiding = '1';
         fish.classList.add('hiding');
       }
-    }, 8200);
+    }, 3500);
     return true;
   }
 
@@ -324,8 +324,11 @@
       if (fish.classList.contains('fast')) return;
       if (fish.dataset.hiding === '1' || fish.dataset.hiding === 'swimming') return;
 
-      // 随机概率躲到水草下
-      if (Math.random() < 0.1) {
+      // 小概率偷懒不动
+      if (Math.random() < 0.1) return;
+
+      // 很小概率躲到水草下
+      if (Math.random() < 0.05) {
         hideUnderGrass(fish);
         return;
       }
@@ -366,14 +369,15 @@
       fish.style.top  = ny + '%';
     });
   }
-  // 每 5-8 秒移动一次
-  setInterval(moveFish, 6000);
-  setTimeout(moveFish, 2000); // 初始延迟后开始
+  // 每 3 秒移动一次
+  setInterval(moveFish, 3000);
+  setTimeout(moveFish, 1500); // 初始延迟后开始
 
   /* ==========================================
      思考气泡 — 箭头切换想法
      ========================================== */
   var thinkIdeas = [
+    { icon: '♥', href: 'https://www.bilibili.com' },
     { icon: '🐇', href: '#' },
     { icon: '🌳', href: '#' },
     { icon: '🌸', href: '#' },
