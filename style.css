@@ -1,314 +1,415 @@
-﻿/* ===== Reset ===== */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+/* ========================================================
+   🐸 蛙蛙池塘 — 复古低像素可爱风格
+   参考：莫兰迪色调 · 像素块边缘 · 无抗锯齿
+   ======================================================== */
 
-/* ===== Custom Cursor (SVG frog) ===== */
-html{
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='12' fill='%2388c999'/%3E%3Ccircle cx='10' cy='10' r='6' fill='%2388c999'/%3E%3Ccircle cx='22' cy='10' r='6' fill='%2388c999'/%3E%3Ccircle cx='10' cy='9' r='3' fill='white'/%3E%3Ccircle cx='22' cy='9' r='3' fill='white'/%3E%3Ccircle cx='11' cy='9' r='1.5' fill='%23333'/%3E%3Ccircle cx='23' cy='9' r='1.5' fill='%23333'/%3E%3Cellipse cx='13' cy='20' rx='2' ry='1' fill='%23f4a0a0'/%3E%3Cellipse cx='19' cy='20' rx='2' ry='1' fill='%23f4a0a0'/%3E%3Cpath d='M13 17 Q16 20 19 17' stroke='%23555' stroke-width='1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, auto;
-}
-a,button,.lilypad,.pond-frog{
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='12' fill='%2366bb77'/%3E%3Ccircle cx='10' cy='10' r='6' fill='%2366bb77'/%3E%3Ccircle cx='22' cy='10' r='6' fill='%2366bb77'/%3E%3Ccircle cx='10' cy='9' r='3.5' fill='white'/%3E%3Ccircle cx='22' cy='9' r='3.5' fill='white'/%3E%3Ccircle cx='11' cy='8' r='2' fill='%23333'/%3E%3Ccircle cx='23' cy='8' r='2' fill='%23333'/%3E%3Cellipse cx='13' cy='20' rx='2.5' ry='1.2' fill='%23f4a0a0'/%3E%3Cellipse cx='19' cy='20' rx='2.5' ry='1.2' fill='%23f4a0a0'/%3E%3Cpath d='M12 17 Q16 22 20 17' stroke='%23555' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, pointer;
+/* ===== Reset ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ===== Variables ===== */
-:root{
-  --pond:  #d4eee2;
-  --water: #b8dfe6;
-  --water-deep: #8ecad6;
-  --leaf:  #7cc68a;
-  --leaf-dark: #5aaa6a;
-  --frog:  #88c999;
-  --frog-dark: #5fa872;
-  --pink:  #f2c4c4;
-  --bg:    #e8f5ec;
-  --text:  #3a5a40;
-  --text-light: #6a9a76;
+/* ===== 像素渲染：所有图片保持锐利像素边缘 ===== */
+img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* ===== 自定义鼠标指针 ===== */
+html {
+  cursor: url('images/cursor_frog.png'), auto;
+}
+/* hover 到可交互元素时切换指针 */
+.interactive,
+a,
+button {
+  cursor: url('images/cursor_frog_hover.png'), pointer;
+}
+
+/* ===== CSS 变量（莫兰迪色调） ===== */
+:root {
+  --mint: #8cc9a1;           /* 薄荷绿（文案主色） */
+  --mint-light: #b5e0c8;
+  --mint-dark: #5fa87a;
+  --water-light: #d6eef5;    /* 浅蓝水面 */
+  --water: #b3dce8;
+  --water-deep: #8ec4d4;
+  --cream: #f5f0e8;          /* 米白 */
+  --gray-light: #e2e0db;     /* 浅灰 */
+  --text: #4a6b52;
+  --text-light: #7a9e86;
   --white: #fff;
-  --radius: 20px;
+  --pixel-font: 'Silkscreen', 'Press Start 2P', monospace;
 }
 
-html{scroll-behavior:smooth}
+/* ===== 页面基础 ===== */
+html {
+  scroll-behavior: smooth;
+}
 
-body{
-  font-family: "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  background: var(--bg);
-  background-image:
-    radial-gradient(circle at 15% 80%, rgba(184,223,230,.35) 0%, transparent 50%),
-    radial-gradient(circle at 85% 20%, rgba(124,198,138,.2) 0%, transparent 40%);
+body {
+  font-family: var(--pixel-font);
+  background: linear-gradient(180deg, var(--water-light) 0%, var(--water) 40%, var(--water-deep) 100%);
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ===== Floating bubbles ===== */
-.bubble{
-  position:fixed;
-  border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.6),rgba(184,223,230,.25));
-  pointer-events:none;
-  z-index:0;
-  animation: floatUp linear infinite;
-}
-@keyframes floatUp{
-  0%{transform:translateY(0) scale(1);opacity:.65}
-  100%{transform:translateY(-110vh) scale(.5);opacity:0}
-}
-
-/* ===== Page wrapper ===== */
-.page{
-  position:relative;z-index:1;
-  display:flex;flex-direction:column;align-items:center;
-  padding: 50px 20px 20px;
-  min-height:100vh;
+/* ===== 池塘场景 ===== */
+.pond {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  min-height: 100vh;
+  overflow: hidden;
+  /* 细碎像素波纹背景：用重复渐变模拟 */
+  background-image:
+    radial-gradient(circle 2px at 10% 20%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(circle 2px at 30% 60%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(circle 1px at 55% 35%, rgba(255,255,255,0.18) 0%, transparent 100%),
+    radial-gradient(circle 2px at 70% 80%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(circle 1px at 85% 15%, rgba(255,255,255,0.14) 0%, transparent 100%),
+    radial-gradient(circle 2px at 45% 90%, rgba(255,255,255,0.12) 0%, transparent 100%);
 }
 
-/* ===== Hero ===== */
-.hero{
-  text-align:center;
-  margin-bottom:24px;
-  animation: fadeInDown .8s ease-out;
-}
-@keyframes fadeInDown{
-  from{opacity:0;transform:translateY(-30px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-.frog-face{
-  font-size:5rem;
-  line-height:1;
-  margin-bottom:8px;
-  animation: boop 2.5s ease-in-out infinite;
-  display:inline-block;
-}
-@keyframes boop{
-  0%,100%{transform:translateY(0) rotate(0)}
-  50%{transform:translateY(-10px) rotate(-4deg)}
+/* ===== 核心文案 ===== */
+.title {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  font-family: var(--pixel-font);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--mint);
+  text-shadow:
+    2px 2px 0 rgba(255,255,255,0.5),
+    -1px -1px 0 rgba(90,168,122,0.2);
+  padding: 60px 20px 20px;
+  line-height: 1.8;
+  animation: float 3.5s ease-in-out infinite;
+  /* 像素风：禁用字体平滑 */
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
 }
 
-.hero h1{
-  font-size:1.7rem;
-  font-weight:800;
-  color:var(--frog-dark);
-  margin-bottom:6px;
-}
-.hero p{
-  font-size:.95rem;
-  color:var(--text-light);
-  max-width:360px;
-  margin:0 auto;
+/* 缓慢上下浮动 */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
 }
 
-/* ===== Pond Scene ===== */
-.pond-scene{
-  position:relative;
-  width:90%;max-width:540px;
-  aspect-ratio:16/10;
-  background: radial-gradient(ellipse at 50% 55%, var(--water) 0%, var(--water-deep) 90%);
-  border-radius: 50% 50% 46% 54% / 38% 38% 62% 62%;
-  box-shadow: 0 10px 40px rgba(90,170,106,.18), inset 0 -10px 30px rgba(142,202,214,.4);
-  margin-bottom:24px;
-  overflow:hidden;
-  animation: fadeIn 1s ease-out .3s both;
+/* ===== 坐姿青蛙 ===== */
+.frog-wrap {
+  position: relative;
+  z-index: 10;
+  width: 140px;
+  margin: 10px auto 0;
+  text-align: center;
+  transition: transform 0.3s ease;
 }
-@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-
-/* Ripple on click */
-.ripple{
-  position:absolute;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.4);
-  pointer-events:none;
-  animation: rippleOut .9s ease-out forwards;
+.frog-wrap:hover {
+  transform: scale(1.08);
 }
-@keyframes rippleOut{
-  0%{width:0;height:0;opacity:.9}
-  100%{width:140px;height:140px;opacity:0;margin:-70px 0 0 -70px}
+.frog {
+  width: 100%;
+  height: auto;
+  display: block;
 }
-
-/* Lily pads */
-.lilypad{
-  position:absolute;
-  border-radius:50%;
-  background: var(--leaf);
-  box-shadow: inset -4px -3px 0 var(--leaf-dark), 0 2px 8px rgba(0,0,0,.08);
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+/* 青蛙跳跃动画（JS 触发 .jumping 类） */
+.frog-wrap.jumping {
+  animation: frogJump 0.6s ease-out;
 }
-.lilypad::after{
-  content:"";position:absolute;
-  top:45%;left:48%;
-  width:2px;height:45%;
-  background:var(--leaf-dark);
-  transform-origin:top center;
-  transform:rotate(12deg);
-  border-radius:2px;
-  opacity:.6;
-}
-.lilypad:hover{
-  transform:scale(1.15) rotate(-5deg)!important;
-  box-shadow: inset -4px -3px 0 var(--leaf-dark), 0 6px 20px rgba(90,170,106,.3);
-}
-.lilypad:active{transform:scale(.92)!important}
-
-.lp1{top:15%;left:6%;width:68px;height:42px}
-.lp2{top:58%;left:18%;width:54px;height:34px;background:#6dbe7e}
-.lp3{top:25%;right:8%;width:74px;height:46px}
-.lp4{bottom:12%;left:42%;width:58px;height:36px;background:#6dbe7e}
-.lp5{bottom:28%;right:14%;width:48px;height:30px}
-
-/* Flowers on lilypads */
-.lp3::before{content:"🌸";position:absolute;top:-16px;left:30px;font-size:1.15rem}
-.lp1::before{content:"🌼";position:absolute;top:-13px;left:24px;font-size:.95rem}
-.lp5::before{content:"🪷";position:absolute;top:-13px;left:16px;font-size:.9rem}
-
-/* Central frog */
-.pond-frog{
-  position:absolute;
-  font-size:2.8rem;
-  top:38%;left:50%;
-  transform:translate(-50%,-50%);
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
-  z-index:3;
-  user-select:none;
-  animation: frogFloat 3.5s ease-in-out infinite;
-}
-@keyframes frogFloat{
-  0%,100%{transform:translate(-50%,-50%) rotate(0)}
-  30%{transform:translate(-50%,-54%) rotate(3deg)}
-  70%{transform:translate(-50%,-46%) rotate(-3deg)}
-}
-.pond-frog:hover{
-  animation:none;
-  transform:translate(-50%,-50%) scale(1.3);
+@keyframes frogJump {
+  0%   { transform: translateY(0); }
+  30%  { transform: translateY(-28px) scaleY(1.08); }
+  50%  { transform: translateY(-30px) scaleY(1.05); }
+  70%  { transform: translateY(-10px) scaleY(0.95); }
+  100% { transform: translateY(0) scaleY(1); }
 }
 
-/* tiny friends */
-.dragonfly{
-  position:absolute;font-size:1.15rem;
-  top:10%;right:16%;
-  animation: dfly 7s ease-in-out infinite;
-  pointer-events:none;
+/* ===== 跳转按钮（荷叶样式） ===== */
+.nav-buttons {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 18px;
+  /* 初始隐藏，JS 添加 .show 后显示 */
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-@keyframes dfly{
-  0%,100%{transform:translate(0,0) rotate(0)}
-  25%{transform:translate(-24px,14px) rotate(-6deg)}
-  50%{transform:translate(14px,22px) rotate(5deg)}
-  75%{transform:translate(22px,-8px) rotate(-4deg)}
-}
-.fish{
-  position:absolute;font-size:1rem;
-  bottom:18%;left:12%;
-  animation: fishSwim 5s ease-in-out infinite;
-  pointer-events:none;opacity:.7;
-}
-@keyframes fishSwim{
-  0%,100%{transform:translateX(0)}
-  50%{transform:translateX(60px)}
+.nav-buttons.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
-/* Bottom wave */
-.pond-wave{
-  position:absolute;bottom:0;left:0;width:200%;height:18px;
-  background: repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(255,255,255,.15) 28px, rgba(255,255,255,.15) 56px);
-  animation: waveSlide 4.5s linear infinite;
+.nav-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.35s ease, filter 0.35s ease;
 }
-@keyframes waveSlide{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-/* ===== Nav Popup ===== */
-.nav-popup{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%) scale(0);
-  background:rgba(255,255,255,.93);
-  backdrop-filter:blur(10px);
-  border-radius:var(--radius);
-  padding:28px 22px 22px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  box-shadow:0 10px 40px rgba(90,170,106,.25);
-  z-index:10;
-  transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-  opacity:0;
-  pointer-events:none;
-  min-width:240px;
+.nav-btn:hover {
+  transform: translateY(-6px);
+  filter: brightness(1.15) saturate(1.2);
 }
-.nav-popup.show{
-  transform:translate(-50%,-50%) scale(1);
-  opacity:1;
-  pointer-events:auto;
+.nav-btn:active {
+  transform: translateY(-2px) scale(0.95);
 }
 
-.nav-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:10px 16px;
-  border:none;
-  border-radius:40px;
-  background:var(--leaf);
-  color:var(--white);
-  font-size:.85rem;
-  font-weight:600;
-  text-decoration:none;
-  transition:background .25s,transform .25s;
-  white-space:nowrap;
-  justify-content:center;
-}
-.nav-btn:hover{
-  background:var(--frog-dark);
-  transform:scale(1.08);
-}
-.nav-btn:active{transform:scale(.94)}
-.nav-btn .bi{font-size:1rem}
-
-.nav-close{
-  position:absolute;top:6px;right:10px;
-  background:none;border:none;font-size:1.1rem;
-  color:var(--text-light);
-  transition:transform .2s;
-}
-.nav-close:hover{transform:rotate(90deg)}
-
-/* ===== Hint ===== */
-.hint{
-  text-align:center;
-  font-size:.82rem;
-  color:var(--text-light);
-  margin-bottom:16px;
-  animation: fadeIn 1s ease-out .6s both;
+.nav-btn-bg {
+  width: 120px;
+  height: auto;
+  display: block;
 }
 
-/* ===== Splash emoji ===== */
-.splash{
-  position:absolute;
-  pointer-events:none;
-  font-size:1.3rem;
-  animation: splashUp .65s ease-out forwards;
-  z-index:5;
-}
-@keyframes splashUp{
-  0%{opacity:1;transform:translateY(0) scale(1)}
-  100%{opacity:0;transform:translateY(-36px) scale(1.4)}
+.nav-btn-text {
+  position: absolute;
+  font-family: var(--pixel-font);
+  font-size: 0.7rem;
+  color: var(--text);
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.6);
+  pointer-events: none;
+  white-space: nowrap;
+  -webkit-font-smoothing: none;
 }
 
-/* ===== Footer ===== */
-footer{
-  margin-top:auto;
-  padding:18px;
-  text-align:center;
-  font-size:.72rem;
-  color:var(--text-light);
-  opacity:.6;
+/* ===== 荷叶分布 ===== */
+.lily-pad {
+  position: absolute;
+  width: 80px;
+  height: auto;
+  z-index: 5;
+  transition: transform 0.3s ease;
 }
-footer span{color:var(--leaf)}
+.lily-pad:hover {
+  transform: scale(1.1) rotate(-5deg);
+}
+/* 荷叶摇晃动画（JS 触发 .wobble 类） */
+.lily-pad.wobble {
+  animation: lilyWobble 0.8s ease-in-out;
+}
+@keyframes lilyWobble {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(8deg); }
+  40%  { transform: rotate(-6deg); }
+  60%  { transform: rotate(4deg); }
+  80%  { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
 
-/* ===== Mobile ===== */
-@media(max-width:520px){
-  .frog-face{font-size:3.4rem}
-  .hero h1{font-size:1.3rem}
-  .hero p{font-size:.88rem}
-  .pond-scene{width:96%;aspect-ratio:4/3;border-radius:44% 44% 40% 40%/36% 36% 64% 64%}
-  .lilypad{transform:scale(.8)}
-  .pond-frog{font-size:2.1rem}
-  .nav-popup{min-width:200px;padding:22px 14px 16px;gap:8px}
-  .nav-btn{padding:8px 12px;font-size:.78rem}
+/* 4 个荷叶的位置 */
+.lp1 { top: 42%; left: 5%;  width: 75px; }
+.lp2 { top: 60%; left: 22%; width: 65px; transform: rotate(15deg); }
+.lp3 { top: 50%; right: 8%; width: 80px; transform: rotate(-10deg); }
+.lp4 { top: 72%; right: 25%;width: 60px; transform: rotate(5deg); }
+
+/* ===== 水草 ===== */
+.grass {
+  position: absolute;
+  z-index: 3;
+  width: 50px;
+  height: auto;
+  pointer-events: none;
+  animation: grassSway 4s ease-in-out infinite;
+}
+@keyframes grassSway {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(3deg); }
+}
+.g1 { bottom: 2%; left: 3%;  width: 55px; animation-delay: 0s; }
+.g2 { bottom: 2%; left: 45%; width: 40px; animation-delay: 1.2s; transform: scaleX(-1); }
+.g3 { bottom: 2%; right: 5%; width: 50px; animation-delay: 0.6s; }
+
+/* ===== 小花 ===== */
+.flower {
+  position: absolute;
+  z-index: 4;
+  width: 35px;
+  height: auto;
+  pointer-events: none;
+  animation: flowerBob 3s ease-in-out infinite;
+}
+@keyframes flowerBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-4px) rotate(3deg); }
+}
+.f1 { top: 38%; left: 15%;  width: 30px; animation-delay: 0.5s; }
+.f2 { top: 55%; right: 18%; width: 35px; animation-delay: 1.5s; }
+.f3 { top: 75%; left: 38%;  width: 28px; animation-delay: 2.2s; }
+
+/* ===== 小鱼（缓慢左右游动） ===== */
+.fish {
+  position: absolute;
+  z-index: 4;
+  width: 40px;
+  height: auto;
+  pointer-events: none;
+}
+.fish1 {
+  top: 65%;
+  left: -5%;
+  animation: fishSwim1 12s linear infinite;
+}
+.fish2 {
+  top: 80%;
+  right: -5%;
+  animation: fishSwim2 15s linear infinite;
+  transform: scaleX(-1);
+}
+.fish3 {
+  top: 55%;
+  left: 10%;
+  width: 32px;
+  animation: fishSwim3 18s linear infinite;
+  animation-delay: 3s;
+}
+
+/* 鱼从左到右游 */
+@keyframes fishSwim1 {
+  0%   { transform: translateX(-60px) scaleX(1); opacity: 0; }
+  5%   { opacity: 1; }
+  48%  { transform: translateX(calc(100vw - 100px)) scaleX(1); opacity: 1; }
+  50%  { transform: translateX(calc(100vw - 100px)) scaleX(-1); opacity: 1; }
+  95%  { opacity: 1; }
+  98%  { transform: translateX(-60px) scaleX(-1); opacity: 1; }
+  100% { transform: translateX(-60px) scaleX(1); opacity: 0; }
+}
+/* 鱼从右到左游 */
+@keyframes fishSwim2 {
+  0%   { transform: translateX(60px) scaleX(-1); opacity: 0; }
+  5%   { opacity: 1; }
+  48%  { transform: translateX(calc(-100vw + 100px)) scaleX(-1); opacity: 1; }
+  50%  { transform: translateX(calc(-100vw + 100px)) scaleX(1); opacity: 1; }
+  95%  { opacity: 1; }
+  98%  { transform: translateX(60px) scaleX(1); opacity: 1; }
+  100% { transform: translateX(60px) scaleX(-1); opacity: 0; }
+}
+/* 第三条鱼：慢速巡游 */
+@keyframes fishSwim3 {
+  0%   { transform: translateX(0) translateY(0); }
+  25%  { transform: translateX(120px) translateY(-15px); }
+  50%  { transform: translateX(250px) translateY(5px); }
+  75%  { transform: translateX(120px) translateY(15px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+/* ===== 水波纹（JS 生成，使用 ripple.png） ===== */
+.ripple {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+  animation: rippleExpand 1.2s ease-out forwards;
+}
+.ripple img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+@keyframes rippleExpand {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  100% {
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+/* ===== 小气泡（JS 生成，纯 CSS 圆形） ===== */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), rgba(179,220,232,0.25));
+  border: 1px solid rgba(255,255,255,0.3);
+  pointer-events: none;
+  z-index: 6;
+  animation: bubbleUp 2.5s ease-out forwards;
+}
+@keyframes bubbleUp {
+  0% {
+    opacity: 0.8;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(0.4);
+  }
+}
+
+/* ===== 页脚 ===== */
+.footer {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  font-family: var(--pixel-font);
+  font-size: 0.55rem;
+  color: var(--text-light);
+  padding: 20px;
+  opacity: 0.6;
+  -webkit-font-smoothing: none;
+}
+
+/* ===== 响应式：手机端 ===== */
+@media (max-width: 600px) {
+  .title {
+    font-size: 1rem;
+    padding: 40px 14px 14px;
+  }
+  .frog-wrap {
+    width: 100px;
+  }
+  /* 按钮垂直排列 */
+  .nav-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .nav-btn-bg {
+    width: 100px;
+  }
+  .nav-btn-text {
+    font-size: 0.6rem;
+  }
+  .lily-pad {
+    width: 55px;
+  }
+  .lp1 { width: 55px; }
+  .lp2 { width: 48px; }
+  .lp3 { width: 58px; }
+  .lp4 { width: 45px; }
+  .grass { width: 35px; }
+  .g1 { width: 40px; }
+  .flower { width: 25px; }
+  .fish { width: 30px; }
+}
+
+@media (max-width: 400px) {
+  .title {
+    font-size: 0.8rem;
+    padding: 30px 10px 10px;
+  }
+  .frog-wrap {
+    width: 80px;
+  }
+  .nav-btn-bg {
+    width: 85px;
+  }
 }
