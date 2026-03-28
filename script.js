@@ -60,6 +60,55 @@
     return dx * dx + dy * dy <= 1;
   }
 
+  function getFishSize(fish) {
+    var w = parseFloat(fish.style.width) || 6;
+    var h = parseFloat(fish.dataset.heightPct) || w * 0.6;
+    return { w: w, h: h };
+  }
+
+  function clampFishPos(x, y, w, h) {
+    return {
+      x: Math.max(10, Math.min(88 - w, x)),
+      y: Math.max(10, Math.min(86 - h, y))
+    };
+  }
+
+  function resolveFishTarget(fish, fromX, fromY, deltaX, deltaY) {
+    var size = getFishSize(fish);
+    var attempts = [1, 0.8, 0.6, 0.45, 0.3, 0.18];
+    var i;
+
+    for (i = 0; i < attempts.length; i++) {
+      var forward = clampFishPos(
+        fromX + deltaX * attempts[i],
+        fromY + deltaY * attempts[i],
+        size.w,
+        size.h
+      );
+      if (insideEllipse(forward.x, forward.y, size.w, size.h)) return forward;
+    }
+
+    for (i = 0; i < attempts.length; i++) {
+      var backward = clampFishPos(
+        fromX - deltaX * attempts[i],
+        fromY + deltaY * attempts[i] * 0.5,
+        size.w,
+        size.h
+      );
+      if (insideEllipse(backward.x, backward.y, size.w, size.h)) return backward;
+    }
+
+    var toCenter = clampFishPos(
+      fromX + (50 - fromX) * 0.35,
+      fromY + (50 - fromY) * 0.35,
+      size.w,
+      size.h
+    );
+    if (insideEllipse(toCenter.x, toCenter.y, size.w, size.h)) return toCenter;
+
+    return { x: fromX, y: fromY };
+  }
+
   /* ====== 碰撞检测 ====== */
   // placed: [{x,y,w,h}, ...]  全部用百分比
   var placed = [];
@@ -235,6 +284,7 @@
     var dir = Math.random() > 0.5 ? 1 : -1;
     fish.style.transform = 'scaleX(' + dir + ')';
     fish.dataset.dir = dir;
+    fish.dataset.heightPct = fishH;
     fish.dataset.hiding = '0';
 
     elBox.appendChild(fish);
@@ -252,14 +302,10 @@
           var cx = parseFloat(el.style.left);
           var cy = parseFloat(el.style.top);
           var curDir = parseInt(el.dataset.dir);
-          var nx = cx + (-curDir) * rand(15, 25);
-          var ny = cy + rand(-6, 6);
-          nx = Math.max(14, Math.min(80, nx));
-          ny = Math.max(16, Math.min(80, ny));
-          if (!pointInEllipse(nx, ny)) { nx = 50 + (nx > 50 ? -10 : 10); ny = 50; }
-          setFishDir(el, cx, nx);
-          el.style.left = nx + '%';
-          el.style.top  = ny + '%';
+          var escapeTarget = resolveFishTarget(el, cx, cy, (-curDir) * rand(15, 25), rand(-6, 6));
+          setFishDir(el, cx, escapeTarget.x);
+          el.style.left = escapeTarget.x + '%';
+          el.style.top  = escapeTarget.y + '%';
           setTimeout(function() { el.classList.remove('fast'); }, 1600);
           return;
         }
@@ -273,14 +319,10 @@
         // 加速：沿当前朝向移动
         el.classList.add('fast');
         var curY = parseFloat(el.style.top);
-        var newX = curX + curDir * rand(15, 30);
-        var newY = curY + rand(-8, 8);
-        newX = Math.max(14, Math.min(80, newX));
-        newY = Math.max(16, Math.min(80, newY));
-        if (!pointInEllipse(newX, newY)) { newX = 50; newY = 50; }
-        setFishDir(el, curX, newX);
-        el.style.left = newX + '%';
-        el.style.top  = newY + '%';
+        var clickTarget = resolveFishTarget(el, curX, curY, curDir * rand(15, 30), rand(-8, 8));
+        setFishDir(el, curX, clickTarget.x);
+        el.style.left = clickTarget.x + '%';
+        el.style.top  = clickTarget.y + '%';
         setTimeout(function() { el.classList.remove('fast'); }, 1600);
       });
     })(fish);
@@ -379,8 +421,8 @@
      ========================================== */
   var thinkIdeas = [
     { icon: '🦒', href: 'https://lijiangyu010.github.io/goldfish/' },
+    { icon: '🌳', href: '#' },
     { icon: '🐇', href: '#' },
-    { icon: '🦌', href: '#' },
     { icon: '🌸', href: '#' },
     { icon: '⭐', href: '#' },
     { icon: '🍄', href: '#' }
