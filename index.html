@@ -11,59 +11,53 @@
 </head>
 <body>
 
-  <!-- 整个场景容器 -->
   <div class="scene">
-
-    <!-- 标题：页面中央偏上 -->
     <h1 class="title">你好蛙！欢迎来这个池塘玩水🐸</h1>
 
-    <!-- ======== 池塘（椭圆水面） ======== -->
+    <!-- ======== 池塘 ======== -->
     <div class="pond" id="pond">
 
-      <!-- 坐姿青蛙（池塘正中偏上） -->
+      <!-- 像素锯齿边缘（CSS 阶梯） -->
+      <div class="pixel-border pb-top"></div>
+      <div class="pixel-border pb-bottom"></div>
+      <div class="pixel-border pb-left"></div>
+      <div class="pixel-border pb-right"></div>
+
+      <!-- 水面波纹线 -->
+      <div class="water-line wl1"></div>
+      <div class="water-line wl2"></div>
+      <div class="water-line wl3"></div>
+
+      <!-- 坐姿青蛙（固定中央） -->
       <div class="frog-wrap interactive" id="frogWrap">
         <img src="images/frog_sit.png" alt="坐姿青蛙" class="frog" id="frog" />
+        <div class="frog-ripple"></div>
       </div>
 
-      <!-- 荷叶按钮（点击青蛙弹出） -->
-      <div class="nav-buttons" id="navButtons">
-        <a href="#" class="nav-btn interactive">
-          <img src="images/lily_pad.png" alt="" class="nav-btn-bg" />
-          <span class="nav-btn-text">兔子冒险</span>
-        </a>
-        <a href="#" class="nav-btn interactive">
-          <img src="images/lily_pad.png" alt="" class="nav-btn-bg" />
-          <span class="nav-btn-text">生日蛋糕</span>
-        </a>
+      <!-- 思考对话框（点击青蛙弹出） -->
+      <div class="think-bubble" id="thinkBubble">
+        <img src="images/think.png" alt="思考" class="think-bg" />
+        <div class="think-buttons">
+          <a href="#" class="think-btn interactive" id="btnRabbit" title="兔子冒险">🐇</a>
+          <a href="#" class="think-btn interactive" id="btnTree" title="生日蛋糕">🌳</a>
+        </div>
       </div>
 
-      <!-- 荷叶 ×4 -->
-      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp1" />
-      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp2" />
-      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp3" />
-      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp4" />
-
-      <!-- 小花 ×3 -->
-      <img src="images/flower.png" alt="小花" class="decor flower f1" />
-      <img src="images/flower.png" alt="小花" class="decor flower f2" />
-      <img src="images/flower.png" alt="小花" class="decor flower f3" />
-
-      <!-- 小鱼 ×3 -->
-      <img src="images/fish.png" alt="小鱼" class="decor fish fish1" />
-      <img src="images/fish.png" alt="小鱼" class="decor fish fish2" />
-      <img src="images/fish.png" alt="小鱼" class="decor fish fish3" />
-
-      <!-- 水草 ×3（池塘底部边缘） -->
-      <img src="images/grass.png" alt="水草" class="decor grass g1" />
-      <img src="images/grass.png" alt="水草" class="decor grass g2" />
-      <img src="images/grass.png" alt="水草" class="decor grass g3" />
+      <!-- 荷叶容器（JS 随机分布） -->
+      <div id="lilyContainer"></div>
+      <!-- 小花容器 -->
+      <div id="flowerContainer"></div>
+      <!-- 小鱼容器 -->
+      <div id="fishContainer"></div>
+      <!-- 水草容器（PNG） -->
+      <div id="grassContainer"></div>
+      <!-- CSS 像素水草容器 -->
+      <div id="pixelGrassContainer"></div>
 
     </div><!-- /.pond -->
-
   </div><!-- /.scene -->
 
   <footer class="footer">🐸 蛙蛙池塘 &copy; 2026</footer>
-
   <script src="script.js"></script>
 </body>
 </html>
