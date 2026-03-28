@@ -74,6 +74,17 @@ body {
   overflow: hidden;
 }
 
+/* 竖屏 / 手机端切换竖版池塘 */
+@media (orientation: portrait) {
+  .pond {
+    background-image: url('images/pond_mobile.png');
+    width: 94vw;
+    height: calc(94vw * 1.247);
+    max-height: calc(100vh - 100px);
+    min-height: 280px;
+  }
+}
+
 /* ===== 像素锯齿边缘（pond.png 自带，隐藏CSS边缘） ===== */
 .edge { display: none; }
 .edge-t {
@@ -361,13 +372,13 @@ body {
    响应式
    ========================================================== */
 @media (max-width: 768px) {
-  .pond { width: 98vw; height: calc(100vh - 90px); max-height: 600px; }
+  .pond { width: 98vw; max-height: 600px; }
   .frog-wrap { width: clamp(55px, 16%, 100px); }
   .think-bubble { width: clamp(80px, 22%, 140px); }
 }
 @media (max-width: 480px) {
   .title { font-size: 0.6rem; padding: 10px 8px 6px; }
-  .pond { width: 99vw; height: calc(100vh - 70px); min-height: 320px; max-height: 520px; }
+  .pond { width: 99vw; min-height: 280px; }
   .frog-wrap { width: clamp(48px, 20%, 85px); }
   .think-bubble { width: clamp(70px, 26%, 120px); }
   .think-arrow { width: 16px; height: 16px; }

@@ -22,8 +22,22 @@
   function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
 
   /* ====== 椭圆边界检测 ====== */
-  // pond.png 的水面区域近似椭圆，中心(50,50)，半轴约(38,36)
-  var ellCx = 50, ellCy = 50, ellA = 36, ellB = 34;
+  // 根据屏幕朝向动态调整椭圆参数
+  // pond.png 横版: 水面椭圆约 中心(50,50) 半轴(36,34)
+  // pond_mobile.png 竖版: 水面椭圆约 中心(50,50) 半轴(34,38)
+  var ellCx = 50, ellCy = 50, ellA, ellB;
+
+  function updateEllipse() {
+    var isPortrait = window.innerHeight > window.innerWidth;
+    if (isPortrait) {
+      ellA = 32; // 竖版横向更窄
+      ellB = 36; // 竖版纵向更高
+    } else {
+      ellA = 36; // 横版横向更宽
+      ellB = 34;
+    }
+  }
+  updateEllipse();
 
   function insideEllipse(x, y, w, h) {
     // 检测矩形4个角 + 中心是否都在椭圆内
@@ -109,9 +123,9 @@
      荷叶 ×4
      ========================================== */
   for (var li = 0; li < 4; li++) {
-    var lw = rand(10, 15);
+    var lw = rand(10, 14);
     var lh = lw * 0.6;  // 近似高宽比
-    var lpos = findPos(lw, lh, 6);
+    var lpos = findPos(lw, lh, 10);
     var lp = makeEl('img', 'el-lily', 'images/lily_pad.png', lw);
     lp.style.left = lpos.x + '%';
     lp.style.top  = lpos.y + '%';
@@ -450,6 +464,12 @@
     if (e.target.closest('.frog-wrap') ||
         e.target.closest('.think-bubble') ||
         e.target.closest('.el')) return;
+
+    // 只在椭圆水面区域内产生波纹和泡泡
+    var rect = pond.getBoundingClientRect();
+    var pctX = (e.clientX - rect.left) / rect.width * 100;
+    var pctY = (e.clientY - rect.top) / rect.height * 100;
+    if (!pointInEllipse(pctX, pctY)) return;
 
     createRipple(e.clientX, e.clientY);
     var n = randInt(3, 5);
