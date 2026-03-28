@@ -113,7 +113,7 @@
   // placed: [{x,y,w,h}, ...]  全部用百分比
   var placed = [];
   // 中央青蛙 + 荷叶座位保留区
-  placed.push({ x: 34, y: 30, w: 32, h: 34 });
+  placed.push({ x: 20, y: 20, w: 20, h: 20 });
 
   function overlaps(r) {
     for (var i = 0; i < placed.length; i++) {
@@ -263,9 +263,9 @@
   }
 
   /* ==========================================
-     水草 PNG ×6
+     水草 PNG ×8
      ========================================== */
-  for (var gi = 0; gi < 7; gi++) {
+  for (var gi = 0; gi < 8; gi++) {
     var gw = rand(5, 9);
     var gh = gw * 1.8;
     var gpos = findPos(gw, gh);
@@ -322,12 +322,12 @@
   }
 
   /* ==========================================
-     小鱼 ×4 — 平滑游动 + 椭圆内 + 躲水草
+     小鱼 ×6 — 平滑游动 + 椭圆内 + 躲水草
      ========================================== */
   var fishes = [];
   var grassEls = document.querySelectorAll('.el-grass');
 
-  for (var fii = 0; fii < 5; fii++) {
+  for (var fii = 0; fii < 6; fii++) {
     var fishW = rand(5, 7.5);
     var fishH = fishW * 0.6;
     var fishPos = findPos(fishW, fishH);
