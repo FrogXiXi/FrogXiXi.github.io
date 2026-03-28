@@ -112,8 +112,14 @@
   /* ====== 碰撞检测 ====== */
   // placed: [{x,y,w,h}, ...]  全部用百分比
   var placed = [];
-  // 中央青蛙 + 荷叶座位保留区
-  placed.push({ x: 20, y: 20, w: 20, h: 20 });
+  // 中央青蛙 + 荷叶座位保留区，按屏幕方向预留中心区域
+  function getFrogReserveRect() {
+    var isPortrait = window.innerHeight > window.innerWidth;
+    return isPortrait
+      ? { x: 33, y: 31, w: 34, h: 30 }
+      : { x: 37, y: 35, w: 26, h: 24 };
+  }
+  placed.push(getFrogReserveRect());
 
   function overlaps(r) {
     for (var i = 0; i < placed.length; i++) {
