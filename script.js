@@ -12,14 +12,16 @@
   var navVisible = false;
 
   /* ==========================
-     1. 点击荷叶：摇晃 + 波纹
+     1. 点击荷叶：摇晃 + 水波纹
      ========================== */
   lilyPads.forEach(function (pad) {
     pad.addEventListener('click', function (e) {
       e.stopPropagation();
+      // 触发摇晃动画
       pad.classList.remove('wobble');
-      void pad.offsetWidth;            // 强制回流
+      void pad.offsetWidth; // 强制回流重新触发
       pad.classList.add('wobble');
+      // 生成水波纹
       createRipple(e.clientX, e.clientY);
       pad.addEventListener('animationend', function h() {
         pad.classList.remove('wobble');
@@ -37,8 +39,11 @@
         e.target.closest('.lily-pad')) return;
 
     createRipple(e.clientX, e.clientY);
-    var n = 3 + Math.floor(Math.random() * 3);   // 3-5 个气泡
-    for (var i = 0; i < n; i++) createBubble(e.clientX, e.clientY, i);
+    // 生成 3-5 个小气泡
+    var n = 3 + Math.floor(Math.random() * 3);
+    for (var i = 0; i < n; i++) {
+      createBubble(e.clientX, e.clientY, i);
+    }
   });
 
   /* ==========================
@@ -46,6 +51,7 @@
      ========================== */
   frogWrap.addEventListener('click', function (e) {
     e.stopPropagation();
+    // 触发跳跃动画
     frogWrap.classList.remove('jumping');
     void frogWrap.offsetWidth;
     frogWrap.classList.add('jumping');
@@ -53,6 +59,7 @@
       frogWrap.classList.remove('jumping');
       frogWrap.removeEventListener('animationend', h);
     });
+    // 延迟后切换按钮显示
     setTimeout(function () {
       navVisible = !navVisible;
       navBtns.classList.toggle('show', navVisible);
@@ -60,7 +67,7 @@
   });
 
   /* ==========================
-     辅助：水波纹
+     辅助：生成水波纹
      ========================== */
   function createRipple(cx, cy) {
     var r = pond.getBoundingClientRect();
@@ -68,6 +75,7 @@
     el.className = 'ripple';
     var img = document.createElement('img');
     img.src = 'images/ripple.png';
+    img.alt = '';
     el.appendChild(img);
     el.style.left = (cx - r.left) + 'px';
     el.style.top  = (cy - r.top)  + 'px';
@@ -76,7 +84,7 @@
   }
 
   /* ==========================
-     辅助：气泡
+     辅助：生成小气泡
      ========================== */
   function createBubble(cx, cy, idx) {
     var r = pond.getBoundingClientRect();
