@@ -21,6 +21,30 @@
   function rand(a, b) { return a + Math.random() * (b - a); }
   function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
 
+  /* ====== 椭圆边界检测 ====== */
+  // pond.png 的水面区域近似椭圆，中心(50,50)，半轴约(38,36)
+  var ellCx = 50, ellCy = 50, ellA = 36, ellB = 34;
+
+  function insideEllipse(x, y, w, h) {
+    // 检测矩形4个角 + 中心是否都在椭圆内
+    var pts = [
+      [x, y], [x + w, y], [x, y + h], [x + w, y + h],
+      [x + w / 2, y + h / 2]
+    ];
+    for (var i = 0; i < pts.length; i++) {
+      var dx = (pts[i][0] - ellCx) / ellA;
+      var dy = (pts[i][1] - ellCy) / ellB;
+      if (dx * dx + dy * dy > 1) return false;
+    }
+    return true;
+  }
+
+  function pointInEllipse(x, y) {
+    var dx = (x - ellCx) / ellA;
+    var dy = (y - ellCy) / ellB;
+    return dx * dx + dy * dy <= 1;
+  }
+
   /* ====== 碰撞检测 ====== */
   // placed: [{x,y,w,h}, ...]  全部用百分比
   var placed = [];
@@ -38,17 +62,22 @@
 
   function findPos(w, h, margin) {
     margin = margin || 2;
-    for (var t = 0; t < 80; t++) {
-      var x = rand(4, 94 - w);
-      var y = rand(6, 90 - h);
+    for (var t = 0; t < 120; t++) {
+      var x = rand(10, 88 - w);
+      var y = rand(10, 86 - h);
       var r = { x: x - margin, y: y - margin, w: w + margin * 2, h: h + margin * 2 };
-      if (!overlaps(r)) {
+      if (!overlaps(r) && insideEllipse(x, y, w, h)) {
         placed.push(r);
         return { x: x, y: y };
       }
     }
-    // 失败则放在随机位置
-    return { x: rand(4, 90 - w), y: rand(6, 86 - h) };
+    // 失败则找一个椭圆内的位置
+    for (var f = 0; f < 50; f++) {
+      var fx = rand(18, 78 - w);
+      var fy = rand(18, 78 - h);
+      if (insideEllipse(fx, fy, w, h)) return { x: fx, y: fy };
+    }
+    return { x: 30, y: 40 };
   }
 
   /* ====== 创建装饰元素 ====== */
@@ -144,9 +173,10 @@
   }
 
   /* ==========================================
-     小鱼 ×4 — 平滑游动 + 正确朝向 + 点击加速
+     小鱼 ×4 — 平滑游动 + 椭圆内 + 躲水草
      ========================================== */
   var fishes = [];
+  var grassEls = document.querySelectorAll('.el-grass');
 
   for (var fii = 0; fii < 4; fii++) {
     var fishW = rand(5, 7.5);
@@ -161,20 +191,42 @@
     var dir = Math.random() > 0.5 ? 1 : -1;
     fish.style.transform = 'scaleX(' + dir + ')';
     fish.dataset.dir = dir;
-    fish.dataset.baseX = fishPos.x;
-    fish.dataset.baseY = fishPos.y;
+    fish.dataset.hiding = '0';
 
     elBox.appendChild(fish);
     fishes.push(fish);
 
-    // 点击加速逃跑
+    // 点击：如果躲着就出来，否则加速逃跑
     (function(el) {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
+        // 如果在躲藏中，点击出来
+        if (el.dataset.hiding === '1') {
+          el.dataset.hiding = '0';
+          el.classList.remove('hiding');
+          var curDir = parseInt(el.dataset.dir);
+          curDir = -curDir;
+          el.style.transform = 'scaleX(' + curDir + ')';
+          el.dataset.dir = curDir;
+          el.classList.add('fast');
+          var cx = parseFloat(el.style.left);
+          var cy = parseFloat(el.style.top);
+          var nx = cx + curDir * rand(15, 25);
+          var ny = cy + rand(-6, 6);
+          // 椭圆约束
+          nx = Math.max(14, Math.min(80, nx));
+          ny = Math.max(16, Math.min(80, ny));
+          if (!pointInEllipse(nx, ny)) { nx = 50 + (nx > 50 ? -10 : 10); ny = 50; }
+          el.style.left = nx + '%';
+          el.style.top  = ny + '%';
+          setTimeout(function() { el.classList.remove('fast'); }, 1600);
+          return;
+        }
+
         var curDir = parseInt(el.dataset.dir);
         var curX = parseFloat(el.style.left);
         // 如果鱼在池塘边缘附近，先回头
-        if ((curX <= 8 && curDir === -1) || (curX >= 85 && curDir === 1)) {
+        if (!pointInEllipse(curX + curDir * 5, parseFloat(el.style.top))) {
           curDir = -curDir;
           el.style.transform = 'scaleX(' + curDir + ')';
           el.dataset.dir = curDir;
@@ -184,44 +236,78 @@
         var curY = parseFloat(el.style.top);
         var newX = curX + curDir * rand(15, 30);
         var newY = curY + rand(-8, 8);
-        // 边界限制
-        newX = Math.max(3, Math.min(90, newX));
-        newY = Math.max(5, Math.min(85, newY));
+        newX = Math.max(14, Math.min(80, newX));
+        newY = Math.max(16, Math.min(80, newY));
+        if (!pointInEllipse(newX, newY)) { newX = 50; newY = 50; }
         el.style.left = newX + '%';
         el.style.top  = newY + '%';
-        // 1.5s 后恢复正常速度
-        setTimeout(function() {
-          el.classList.remove('fast');
-        }, 1600);
+        setTimeout(function() { el.classList.remove('fast'); }, 1600);
       });
     })(fish);
   }
 
-  // 鱼巡游定时器：每隔一段时间给鱼设新目标
+  // 让鱼躲到水草下面
+  function hideUnderGrass(fish) {
+    var grasses = elBox.querySelectorAll('.el-grass');
+    if (grasses.length === 0) return false;
+    var g = grasses[randInt(0, grasses.length - 1)];
+    var gx = parseFloat(g.style.left);
+    var gy = parseFloat(g.style.top);
+    fish.dataset.hiding = '1';
+    fish.classList.add('hiding');
+    fish.style.left = gx + '%';
+    fish.style.top  = gy + '%';
+    return true;
+  }
+
+  // 鱼巡游定时器
   function moveFish() {
     fishes.forEach(function(fish) {
-      if (fish.classList.contains('fast')) return; // 逃跑中不干扰
+      if (fish.classList.contains('fast')) return;
+      if (fish.dataset.hiding === '1') return; // 躲着不动
+
+      // 随机概率躲到水草下
+      if (Math.random() < 0.1) {
+        hideUnderGrass(fish);
+        return;
+      }
 
       var curX = parseFloat(fish.style.left);
       var curY = parseFloat(fish.style.top);
       var curDir = parseInt(fish.dataset.dir);
 
-      // 如果在边缘附近，强制转向
-      if (curX <= 8) curDir = 1;
-      else if (curX >= 85) curDir = -1;
+      // 如果当前位置不在椭圆内，游回中心方向
+      if (!pointInEllipse(curX, curY)) {
+        var nx2 = curX + (50 - curX) * 0.5;
+        var ny2 = curY + (50 - curY) * 0.5;
+        var newDir2 = nx2 > curX ? 1 : -1;
+        fish.style.transform = 'scaleX(' + newDir2 + ')';
+        fish.dataset.dir = newDir2;
+        fish.style.left = nx2 + '%';
+        fish.style.top  = ny2 + '%';
+        return;
+      }
 
-      // 新目标
+      // 如果在边缘附近，强制转向
+      if (!pointInEllipse(curX + curDir * 10, curY)) curDir = -curDir;
+
       var dx = rand(8, 22) * (Math.random() > 0.3 ? curDir : -curDir);
       var dy = rand(-6, 6);
       var nx = curX + dx;
       var ny = curY + dy;
-      nx = Math.max(3, Math.min(90, nx));
-      ny = Math.max(5, Math.min(85, ny));
+      nx = Math.max(14, Math.min(80, nx));
+      ny = Math.max(16, Math.min(80, ny));
 
-      // 判断新朝向
+      // 确保新位置在椭圆内
+      if (!pointInEllipse(nx, ny)) {
+        // 缩短距离重试
+        nx = curX + dx * 0.3;
+        ny = curY + dy * 0.3;
+        if (!pointInEllipse(nx, ny)) { nx = curX; ny = curY; }
+      }
+
       var newDir = (nx - curX) > 0 ? 1 : -1;
       if (newDir !== curDir) {
-        // 先转身
         fish.style.transform = 'scaleX(' + newDir + ')';
         fish.dataset.dir = newDir;
       }
