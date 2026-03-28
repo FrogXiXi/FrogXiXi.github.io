@@ -30,7 +30,7 @@
   function updateEllipse() {
     var isPortrait = window.innerHeight > window.innerWidth;
     if (isPortrait) {
-      ellA = 40; // 竖版横向
+      ellA = 41; // 竖版横向
       ellB = 46; // 竖版纵向
     } else {
       ellA = 45; // 横版横向
@@ -378,9 +378,9 @@
      思考气泡 — 箭头切换想法
      ========================================== */
   var thinkIdeas = [
-    { icon: '🐟', href: 'https://www.bilibili.com' },
+    { icon: '🦒', href: 'https://lijiangyu010.github.io/goldfish/' },
     { icon: '🐇', href: '#' },
-    { icon: '🌳', href: '#' },
+    { icon: '🦌', href: '#' },
     { icon: '🌸', href: '#' },
     { icon: '⭐', href: '#' },
     { icon: '🍄', href: '#' }
