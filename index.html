@@ -12,10 +12,9 @@
 </head>
 <body>
 
-  <!-- ===== 池塘场景容器 ===== -->
-  <div class="pond" id="pond">
+  <div class="page-wrap">
 
-    <!-- 核心文案：缓慢上下浮动 -->
+    <!-- 核心文案：页面中央偏上，缓慢上下浮动 -->
     <h1 class="title" id="title">你好蛙！欢迎来这个池塘玩水🐸</h1>
 
     <!-- 坐姿青蛙（核心交互触发点） -->
@@ -23,7 +22,7 @@
       <img src="images/frog_sit.png" alt="坐姿青蛙" class="frog" id="frog" draggable="false" />
     </div>
 
-    <!-- 荷叶样式跳转按钮（点击青蛙后平滑弹出，初始隐藏） -->
+    <!-- 荷叶样式跳转按钮（点击青蛙后平滑弹出） -->
     <div class="nav-buttons" id="navButtons">
       <a href="#" class="nav-btn interactive" id="btnAdventure">
         <img src="images/lily_pad.png" alt="" class="nav-btn-bg" draggable="false" />
@@ -35,28 +34,33 @@
       </a>
     </div>
 
-    <!-- 荷叶 ×4 随机分布 -->
-    <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp1" draggable="false" />
-    <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp2" draggable="false" />
-    <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp3" draggable="false" />
-    <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp4" draggable="false" />
+    <!-- ===== 池塘水面区域（椭圆形） ===== -->
+    <div class="pond" id="pond">
 
-    <!-- 水草 ×3 -->
-    <img src="images/grass.png" alt="水草" class="grass g1" draggable="false" />
-    <img src="images/grass.png" alt="水草" class="grass g2" draggable="false" />
-    <img src="images/grass.png" alt="水草" class="grass g3" draggable="false" />
+      <!-- 荷叶 ×4 -->
+      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp1" draggable="false" />
+      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp2" draggable="false" />
+      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp3" draggable="false" />
+      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp4" draggable="false" />
 
-    <!-- 小花 ×3 -->
-    <img src="images/flower.png" alt="小花" class="flower f1" draggable="false" />
-    <img src="images/flower.png" alt="小花" class="flower f2" draggable="false" />
-    <img src="images/flower.png" alt="小花" class="flower f3" draggable="false" />
+      <!-- 水草 ×3 -->
+      <img src="images/grass.png" alt="水草" class="grass g1" draggable="false" />
+      <img src="images/grass.png" alt="水草" class="grass g2" draggable="false" />
+      <img src="images/grass.png" alt="水草" class="grass g3" draggable="false" />
 
-    <!-- 小鱼 ×3 缓慢游动 -->
-    <img src="images/fish.png" alt="小鱼" class="fish fish1" draggable="false" />
-    <img src="images/fish.png" alt="小鱼" class="fish fish2" draggable="false" />
-    <img src="images/fish.png" alt="小鱼" class="fish fish3" draggable="false" />
+      <!-- 小花 ×3 -->
+      <img src="images/flower.png" alt="小花" class="flower f1" draggable="false" />
+      <img src="images/flower.png" alt="小花" class="flower f2" draggable="false" />
+      <img src="images/flower.png" alt="小花" class="flower f3" draggable="false" />
 
-  </div><!-- /.pond -->
+      <!-- 小鱼 ×3 -->
+      <img src="images/fish.png" alt="小鱼" class="fish fish1" draggable="false" />
+      <img src="images/fish.png" alt="小鱼" class="fish fish2" draggable="false" />
+      <img src="images/fish.png" alt="小鱼" class="fish fish3" draggable="false" />
+
+    </div><!-- /.pond -->
+
+  </div><!-- /.page-wrap -->
 
   <footer class="footer">🐸 蛙蛙池塘 &copy; 2026</footer>
 
