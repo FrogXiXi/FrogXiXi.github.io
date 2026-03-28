@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🐸 你好蛙！</title>
-  <!-- 像素圆润字体 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
@@ -12,55 +11,56 @@
 </head>
 <body>
 
-  <div class="page-wrap">
+  <!-- 整个场景容器 -->
+  <div class="scene">
 
-    <!-- 核心文案：页面中央偏上，缓慢上下浮动 -->
-    <h1 class="title" id="title">你好蛙！欢迎来这个池塘玩水🐸</h1>
+    <!-- 标题：页面中央偏上 -->
+    <h1 class="title">你好蛙！欢迎来这个池塘玩水🐸</h1>
 
-    <!-- 坐姿青蛙（核心交互触发点） -->
-    <div class="frog-wrap interactive" id="frogWrap">
-      <img src="images/frog_sit.png" alt="坐姿青蛙" class="frog" id="frog" draggable="false" />
-    </div>
-
-    <!-- 荷叶样式跳转按钮（点击青蛙后平滑弹出） -->
-    <div class="nav-buttons" id="navButtons">
-      <a href="#" class="nav-btn interactive" id="btnAdventure">
-        <img src="images/lily_pad.png" alt="" class="nav-btn-bg" draggable="false" />
-        <span class="nav-btn-text">兔子冒险</span>
-      </a>
-      <a href="#" class="nav-btn interactive" id="btnCake">
-        <img src="images/lily_pad.png" alt="" class="nav-btn-bg" draggable="false" />
-        <span class="nav-btn-text">生日蛋糕</span>
-      </a>
-    </div>
-
-    <!-- ===== 池塘水面区域（椭圆形） ===== -->
+    <!-- ======== 池塘（椭圆水面） ======== -->
     <div class="pond" id="pond">
 
-      <!-- 荷叶 ×4 -->
-      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp1" draggable="false" />
-      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp2" draggable="false" />
-      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp3" draggable="false" />
-      <img src="images/lily_pad.png" alt="荷叶" class="lily-pad interactive lp4" draggable="false" />
+      <!-- 坐姿青蛙（池塘正中偏上） -->
+      <div class="frog-wrap interactive" id="frogWrap">
+        <img src="images/frog_sit.png" alt="坐姿青蛙" class="frog" id="frog" />
+      </div>
 
-      <!-- 水草 ×3 -->
-      <img src="images/grass.png" alt="水草" class="grass g1" draggable="false" />
-      <img src="images/grass.png" alt="水草" class="grass g2" draggable="false" />
-      <img src="images/grass.png" alt="水草" class="grass g3" draggable="false" />
+      <!-- 荷叶按钮（点击青蛙弹出） -->
+      <div class="nav-buttons" id="navButtons">
+        <a href="#" class="nav-btn interactive">
+          <img src="images/lily_pad.png" alt="" class="nav-btn-bg" />
+          <span class="nav-btn-text">兔子冒险</span>
+        </a>
+        <a href="#" class="nav-btn interactive">
+          <img src="images/lily_pad.png" alt="" class="nav-btn-bg" />
+          <span class="nav-btn-text">生日蛋糕</span>
+        </a>
+      </div>
+
+      <!-- 荷叶 ×4 -->
+      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp1" />
+      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp2" />
+      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp3" />
+      <img src="images/lily_pad.png" alt="荷叶" class="decor lily-pad interactive lp4" />
 
       <!-- 小花 ×3 -->
-      <img src="images/flower.png" alt="小花" class="flower f1" draggable="false" />
-      <img src="images/flower.png" alt="小花" class="flower f2" draggable="false" />
-      <img src="images/flower.png" alt="小花" class="flower f3" draggable="false" />
+      <img src="images/flower.png" alt="小花" class="decor flower f1" />
+      <img src="images/flower.png" alt="小花" class="decor flower f2" />
+      <img src="images/flower.png" alt="小花" class="decor flower f3" />
 
       <!-- 小鱼 ×3 -->
-      <img src="images/fish.png" alt="小鱼" class="fish fish1" draggable="false" />
-      <img src="images/fish.png" alt="小鱼" class="fish fish2" draggable="false" />
-      <img src="images/fish.png" alt="小鱼" class="fish fish3" draggable="false" />
+      <img src="images/fish.png" alt="小鱼" class="decor fish fish1" />
+      <img src="images/fish.png" alt="小鱼" class="decor fish fish2" />
+      <img src="images/fish.png" alt="小鱼" class="decor fish fish3" />
+
+      <!-- 水草 ×3（池塘底部边缘） -->
+      <img src="images/grass.png" alt="水草" class="decor grass g1" />
+      <img src="images/grass.png" alt="水草" class="decor grass g2" />
+      <img src="images/grass.png" alt="水草" class="decor grass g3" />
 
     </div><!-- /.pond -->
 
-  </div><!-- /.page-wrap -->
+  </div><!-- /.scene -->
 
   <footer class="footer">🐸 蛙蛙池塘 &copy; 2026</footer>
 
