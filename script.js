@@ -120,22 +120,6 @@
   }
 
   /* ==========================================
-     CSS 像素水草 ×6（增加密度）
-     ========================================== */
-  for (var pi = 0; pi < 6; pi++) {
-    var pw = 2; var ph = 5;
-    var ppos = findPos(pw, ph, 1);
-    var pg = document.createElement('div');
-    pg.className = 'px-grass';
-    pg.style.left = ppos.x + '%';
-    pg.style.top  = ppos.y + '%';
-    pg.style.animationDelay = rand(0, 5).toFixed(1) + 's';
-    var h1 = randInt(18, 34); var h2 = randInt(12, 24);
-    pg.innerHTML = '<i style="height:' + h1 + 'px"></i><i style="height:' + h2 + 'px"></i>';
-    elBox.appendChild(pg);
-  }
-
-  /* ==========================================
      小花 ×3
      ========================================== */
   for (var fi = 0; fi < 3; fi++) {
@@ -188,9 +172,15 @@
       el.addEventListener('click', function(e) {
         e.stopPropagation();
         var curDir = parseInt(el.dataset.dir);
+        var curX = parseFloat(el.style.left);
+        // 如果鱼在池塘边缘附近，先回头
+        if ((curX <= 8 && curDir === -1) || (curX >= 85 && curDir === 1)) {
+          curDir = -curDir;
+          el.style.transform = 'scaleX(' + curDir + ')';
+          el.dataset.dir = curDir;
+        }
         // 加速：沿当前朝向移动
         el.classList.add('fast');
-        var curX = parseFloat(el.style.left);
         var curY = parseFloat(el.style.top);
         var newX = curX + curDir * rand(15, 30);
         var newY = curY + rand(-8, 8);
@@ -216,8 +206,12 @@
       var curY = parseFloat(fish.style.top);
       var curDir = parseInt(fish.dataset.dir);
 
+      // 如果在边缘附近，强制转向
+      if (curX <= 8) curDir = 1;
+      else if (curX >= 85) curDir = -1;
+
       // 新目标
-      var dx = rand(8, 22) * (Math.random() > 0.5 ? 1 : -1);
+      var dx = rand(8, 22) * (Math.random() > 0.3 ? curDir : -curDir);
       var dy = rand(-6, 6);
       var nx = curX + dx;
       var ny = curY + dy;
@@ -225,7 +219,7 @@
       ny = Math.max(5, Math.min(85, ny));
 
       // 判断新朝向
-      var newDir = dx > 0 ? 1 : -1;
+      var newDir = (nx - curX) > 0 ? 1 : -1;
       if (newDir !== curDir) {
         // 先转身
         fish.style.transform = 'scaleX(' + newDir + ')';

@@ -12,9 +12,9 @@ img {
 }
 
 /* ===== 鼠标指针 ===== */
-html { cursor: url('images/cursor_frog.png') 4 4, auto; }
-.interactive, .interactive img, a, button {
-  cursor: url('images/cursor_frog_hover.png') 4 4, pointer;
+html, html * { cursor: url('images/cursor_frog.png') 0 0, auto !important; }
+.interactive, .interactive *, a, button, [onclick] {
+  cursor: url('images/cursor_frog_hover.png') 0 0, pointer !important;
 }
 
 /* ===== 变量 ===== */
@@ -47,8 +47,7 @@ body {
   text-align: center;
   font-size: clamp(0.7rem, 2.6vw, 1.15rem);
   font-weight: 700;
-  color: var(--mint);
-  text-shadow: 2px 2px 0 rgba(255,255,255,0.7);
+  color: #3b8a4a;
   padding: 16px 12px 10px;
   animation: titleFloat 3.5s ease-in-out infinite;
   -webkit-font-smoothing: none;
@@ -69,7 +68,7 @@ body {
   height: calc(100vh - 110px);
   min-height: 400px;
   max-height: 700px;
-  background: linear-gradient(175deg, var(--water1) 0%, var(--water2) 45%, var(--water3) 100%);
+  background: url('images/pond.png') center/cover no-repeat;
   border-radius: 6px;
   overflow: hidden;
   box-shadow:
@@ -218,19 +217,7 @@ body {
   transition: left 1.5s cubic-bezier(0.2,0.7,0.3,1), top 1.5s cubic-bezier(0.2,0.7,0.3,1), transform 0.3s ease;
 }
 
-/* CSS 像素水草 */
-.px-grass {
-  position: absolute; z-index: 3; pointer-events: none;
-  animation: grassSway 5s ease-in-out infinite;
-  transform-origin: bottom center;
-}
-.px-grass i {
-  display: block; position: absolute; bottom: 0;
-  width: 4px; border-radius: 1px;
-  image-rendering: pixelated;
-}
-.px-grass i:nth-child(1) { left: 0; height: 26px; background: linear-gradient(#5a9e58, #7cc97a); }
-.px-grass i:nth-child(2) { left: 6px; height: 18px; background: linear-gradient(#4d8f4b, #6dba6b); transform: rotate(-8deg); }
+
 
 /* ==========================================================
    青蛙
@@ -241,7 +228,15 @@ body {
   transform: translate(-50%, -50%);
   width: clamp(70px, 12%, 120px);
 }
-.frog-wrap img {
+.frog-seat {
+  position: absolute;
+  width: 150%; height: auto;
+  left: 50%; top: 55%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+}
+.frog-wrap img.frog {
   width: 100%; height: auto; display: block; pointer-events: auto;
 }
 .frog-wrap:hover { transform: translate(-50%, -50%) scale(1.05); }
