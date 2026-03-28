@@ -30,10 +30,10 @@
   function updateEllipse() {
     var isPortrait = window.innerHeight > window.innerWidth;
     if (isPortrait) {
-      ellA = 38; // 竖版横向
-      ellB = 42; // 竖版纵向
+      ellA = 40; // 竖版横向
+      ellB = 46; // 竖版纵向
     } else {
-      ellA = 42; // 横版横向
+      ellA = 44; // 横版横向
       ellB = 38; // 横版纵向
     }
   }
@@ -326,10 +326,10 @@
       if (fish.dataset.hiding === '1' || fish.dataset.hiding === 'swimming') return;
 
       // 小概率偷懒不动
-      if (Math.random() < 0.1) return;
+      if (Math.random() < 0.05) return;
 
       // 很小概率躲到水草下
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.1) {
         hideUnderGrass(fish);
         return;
       }
@@ -378,7 +378,7 @@
      思考气泡 — 箭头切换想法
      ========================================== */
   var thinkIdeas = [
-    { icon: '❤', href: 'https://www.bilibili.com' },
+    { icon: '🐟', href: 'https://www.bilibili.com' },
     { icon: '🐇', href: '#' },
     { icon: '🌳', href: '#' },
     { icon: '🌸', href: '#' },
@@ -391,10 +391,15 @@
   var arrowLeft  = document.getElementById('arrowLeft');
   var arrowRight = document.getElementById('arrowRight');
 
+  function syncCurrentIdea() {
+    thinkIconEl.textContent = thinkIdeas[thinkIdx].icon;
+    thinkLink.href = thinkIdeas[thinkIdx].href;
+  }
+
   function updateArrows() {
     arrowLeft.classList.toggle('disabled', thinkIdx <= 0);
     arrowRight.classList.toggle('disabled', thinkIdx >= thinkIdeas.length - 1);
-    thinkLink.href = thinkIdeas[thinkIdx].href;
+    syncCurrentIdea();
   }
 
   function switchIdea(newIdx) {
@@ -403,10 +408,7 @@
     thinkIconEl.classList.remove('switching');
     void thinkIconEl.offsetWidth;
     thinkIconEl.classList.add('switching');
-    setTimeout(function() {
-      thinkIconEl.textContent = thinkIdeas[thinkIdx].icon;
-      thinkLink.href = thinkIdeas[thinkIdx].href;
-    }, 120);
+    setTimeout(syncCurrentIdea, 120);
     thinkIconEl.addEventListener('animationend', function h() {
       thinkIconEl.classList.remove('switching');
       thinkIconEl.removeEventListener('animationend', h);
