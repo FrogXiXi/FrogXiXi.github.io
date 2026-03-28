@@ -112,8 +112,8 @@
   /* ====== 碰撞检测 ====== */
   // placed: [{x,y,w,h}, ...]  全部用百分比
   var placed = [];
-  // 中央青蛙 + 荷叶座位保留区（荷叶比青蛙大150%）
-  placed.push({ x: 32, y: 30, w: 36, h: 40 });
+  // 中央青蛙 + 荷叶座位保留区
+  placed.push({ x: 26, y: 22, w: 48, h: 54 });
 
   function overlaps(r) {
     for (var i = 0; i < placed.length; i++) {
@@ -126,22 +126,81 @@
 
   function findPos(w, h, margin) {
     margin = margin || 2;
-    for (var t = 0; t < 120; t++) {
-      var x = rand(10, 88 - w);
-      var y = rand(10, 86 - h);
-      var r = { x: x - margin, y: y - margin, w: w + margin * 2, h: h + margin * 2 };
-      if (!overlaps(r) && insideEllipse(x, y, w, h)) {
-        placed.push(r);
-        return { x: x, y: y };
+    var margins = [margin, Math.max(1, margin * 0.5), 0];
+
+    for (var m = 0; m < margins.length; m++) {
+      var currentMargin = margins[m];
+      for (var t = 0; t < 180; t++) {
+        var x = rand(10, 88 - w);
+        var y = rand(10, 86 - h);
+        var r = {
+          x: x - currentMargin,
+          y: y - currentMargin,
+          w: w + currentMargin * 2,
+          h: h + currentMargin * 2
+        };
+        if (!overlaps(r) && insideEllipse(x, y, w, h)) {
+          placed.push(r);
+          return { x: x, y: y };
+        }
       }
     }
-    // 失败则找一个椭圆内的位置
-    for (var f = 0; f < 50; f++) {
-      var fx = rand(18, 78 - w);
-      var fy = rand(18, 78 - h);
-      if (insideEllipse(fx, fy, w, h)) return { x: fx, y: fy };
+
+    return null;
+  }
+
+  function getHideOffset(total, idx) {
+    if (total <= 1) return { x: 0, y: 0 };
+    if (total === 2) return idx === 0 ? { x: -1.8, y: 0.4 } : { x: 1.8, y: -0.2 };
+    if (total === 3) {
+      return [
+        { x: -2.2, y: 0.5 },
+        { x: 2.2, y: 0.5 },
+        { x: 0, y: -1.1 }
+      ][idx];
     }
-    return { x: 30, y: 40 };
+
+    var angle = (Math.PI * 2 * idx) / total - Math.PI / 2;
+    return {
+      x: Math.cos(angle) * 2.3,
+      y: Math.sin(angle) * 1.4
+    };
+  }
+
+  function updateGrassHideLayout(grassIdx) {
+    if (grassIdx < 0 || !grassEls[grassIdx]) return;
+
+    var hiddenFish = fishes.filter(function(fish) {
+      return fish.dataset.hiding === '1' && parseInt(fish.dataset.hideGrass, 10) === grassIdx;
+    });
+    var grassX = parseFloat(grassEls[grassIdx].style.left);
+    var grassY = parseFloat(grassEls[grassIdx].style.top);
+
+    hiddenFish.forEach(function(fish, idx) {
+      var offset = getHideOffset(hiddenFish.length, idx);
+      fish.classList.toggle('hiding-group', hiddenFish.length > 1);
+      fish.style.left = (grassX + offset.x).toFixed(3) + '%';
+      fish.style.top  = (grassY + offset.y).toFixed(3) + '%';
+      fish.dataset.hideCount = hiddenFish.length;
+    });
+  }
+
+  function releaseFishFromHide(fish, deltaX, deltaY) {
+    var grassIdx = parseInt(fish.dataset.hideGrass, 10);
+    var fromX = parseFloat(fish.style.left);
+    var fromY = parseFloat(fish.style.top);
+    var target = resolveFishTarget(fish, fromX, fromY, deltaX, deltaY);
+
+    fish.dataset.hiding = '0';
+    fish.classList.remove('hiding');
+    fish.classList.remove('hiding-group');
+    fish.classList.add('fast');
+    setFishDir(fish, fromX, target.x);
+    fish.style.left = target.x + '%';
+    fish.style.top  = target.y + '%';
+
+    if (!isNaN(grassIdx)) updateGrassHideLayout(grassIdx);
+    setTimeout(function() { fish.classList.remove('fast'); }, 1600);
   }
 
   /* ====== 创建装饰元素 ====== */
@@ -176,6 +235,7 @@
     var lw = rand(10, 14);
     var lh = lw * 0.6;  // 近似高宽比
     var lpos = findPos(lw, lh, 10);
+    if (!lpos) continue;
     var lp = makeEl('img', 'el-lily', 'images/lily_pad.png', lw);
     lp.style.left = lpos.x + '%';
     lp.style.top  = lpos.y + '%';
@@ -203,6 +263,7 @@
     var gw = rand(5, 9);
     var gh = gw * 1.8;
     var gpos = findPos(gw, gh);
+    if (!gpos) continue;
     var gr = makeEl('img', 'el-grass', 'images/grass.png', gw);
     gr.style.left = gpos.x + '%';
     gr.style.top  = gpos.y + '%';
@@ -219,22 +280,8 @@
         });
         // 释放躲在这棵水草下的鱼
         fishes.forEach(function(fish) {
-          if (fish.dataset.hiding === '1' && parseInt(fish.dataset.hideGrass) === grassIdx) {
-            fish.dataset.hiding = '0';
-            fish.classList.remove('hiding');
-            fish.classList.add('fast');
-            var cx = parseFloat(fish.style.left);
-            var cy = parseFloat(fish.style.top);
-            var escDir = Math.random() > 0.5 ? 1 : -1;
-            var nx = cx + escDir * rand(15, 25);
-            var ny = cy + rand(-6, 6);
-            nx = Math.max(14, Math.min(80, nx));
-            ny = Math.max(16, Math.min(80, ny));
-            if (!pointInEllipse(nx, ny)) { nx = 50 + (nx > 50 ? -10 : 10); ny = 50; }
-            setFishDir(fish, cx, nx);
-            fish.style.left = nx + '%';
-            fish.style.top  = ny + '%';
-            setTimeout(function() { fish.classList.remove('fast'); }, 1600);
+          if ((fish.dataset.hiding === '1' || fish.dataset.hiding === 'swimming') && parseInt(fish.dataset.hideGrass, 10) === grassIdx) {
+            releaseFishFromHide(fish, (Math.random() > 0.5 ? 1 : -1) * rand(15, 25), rand(-6, 6));
           }
         });
       });
@@ -248,6 +295,7 @@
     var fw = rand(3.5, 6);
     var fh = fw * 1.2;
     var fpos = findPos(fw, fh);
+    if (!fpos) continue;
     var fl = makeEl('img', 'el-flower', 'images/flower.png', fw);
     fl.style.left = fpos.x + '%';
     fl.style.top  = fpos.y + '%';
@@ -275,6 +323,7 @@
     var fishW = rand(5, 7.5);
     var fishH = fishW * 0.6;
     var fishPos = findPos(fishW, fishH);
+    if (!fishPos) continue;
 
     var fish = makeEl('img', 'el-fish', 'images/fish.png', fishW);
     fish.style.left = fishPos.x + '%';
@@ -296,17 +345,8 @@
         e.stopPropagation();
         // 如果在躲藏中或正在游向水草，点击出来
         if (el.dataset.hiding === '1' || el.dataset.hiding === 'swimming') {
-          el.dataset.hiding = '0';
-          el.classList.remove('hiding');
-          el.classList.add('fast');
-          var cx = parseFloat(el.style.left);
-          var cy = parseFloat(el.style.top);
           var curDir = parseInt(el.dataset.dir);
-          var escapeTarget = resolveFishTarget(el, cx, cy, (-curDir) * rand(15, 25), rand(-6, 6));
-          setFishDir(el, cx, escapeTarget.x);
-          el.style.left = escapeTarget.x + '%';
-          el.style.top  = escapeTarget.y + '%';
-          setTimeout(function() { el.classList.remove('fast'); }, 1600);
+          releaseFishFromHide(el, (-curDir) * rand(15, 25), rand(-6, 6));
           return;
         }
 
@@ -335,11 +375,11 @@
     var g = grasses[randInt(0, grasses.length - 1)];
     var gx = parseFloat(g.style.left);
     var gy = parseFloat(g.style.top);
+    var grassIdx = Array.prototype.indexOf.call(grasses, g);
 
     // 记录目标水草引用
-    fish.dataset.hideGrass = Array.prototype.indexOf.call(
-      elBox.querySelectorAll('.el-grass'), g
-    );
+    fish.dataset.hideGrass = grassIdx;
+    fish.classList.remove('hiding-group');
 
     // 先朝向水草方向
     var curX = parseFloat(fish.style.left);
@@ -356,6 +396,7 @@
       if (fish.dataset.hiding === 'swimming') {
         fish.dataset.hiding = '1';
         fish.classList.add('hiding');
+        updateGrassHideLayout(grassIdx);
       }
     }, 3500);
     return true;

@@ -227,17 +227,22 @@ body {
 /* 小鱼 — 平滑游动 */
 .el-fish {
   z-index: 4;
-  transition: left 3s linear, top 3s linear, transform 0.4s ease, opacity 0.6s ease;
+  transition: left 3s linear, top 3s linear, transform 0.4s ease, opacity 0.6s ease, filter 0.4s ease;
 }
 /* 点击后加速 */
 .el-fish.fast {
-  transition: left 1.5s cubic-bezier(0.2,0.7,0.3,1), top 1.5s cubic-bezier(0.2,0.7,0.3,1), transform 0.3s ease, opacity 0.3s ease;
+  transition: left 1.5s cubic-bezier(0.2,0.7,0.3,1), top 1.5s cubic-bezier(0.2,0.7,0.3,1), transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
 }
 /* 躲在水草下 */
 .el-fish.hiding {
-  opacity: 0.35;
+  opacity: var(--hide-opacity, 0.35);
   z-index: 2;
+  filter: saturate(0.85);
   transition: left 3s linear, top 3s linear, transform 0.4s ease, opacity 1.5s ease;
+}
+.el-fish.hiding-group {
+  --hide-opacity: 0.58;
+  filter: saturate(1) brightness(1.05);
 }
 
 
