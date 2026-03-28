@@ -117,7 +117,7 @@
     var isPortrait = window.innerHeight > window.innerWidth;
     return isPortrait
       ? { x: 33, y: 31, w: 34, h: 30 }
-      : { x: 38, y: 36, w: 24, h: 22 };
+      : { x: 40, y: 38, w: 20, h: 18 };
   }
   placed.push(getFrogReserveRect());
 
