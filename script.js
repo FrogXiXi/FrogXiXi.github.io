@@ -1,305 +1,304 @@
 /**
  * 🐸 蛙蛙池塘 — 交互逻辑
- * 每次刷新随机分布荷叶/鱼/花/水草，青蛙固定中央
- * 泡泡用 bubble.png，鱼点击逃跑，花草点击摇晃
+ *
+ * 修复清单：
+ * - 随机分布不重叠（碰撞检测）
+ * - 所有花/草/鱼都有点击判定
+ * - 鱼点击后加速游走（不瞬移），朝向正确，含转身
+ * - 思考气泡在青蛙上方，点击青蛙可收回
+ * - 泡泡用 bubble.png
  */
 (function () {
   'use strict';
 
-  var pond       = document.getElementById('pond');
-  var frogWrap   = document.getElementById('frogWrap');
-  var thinkBub   = document.getElementById('thinkBubble');
-  var thinkOpen  = false;
+  var pond     = document.getElementById('pond');
+  var frogWrap = document.getElementById('frogWrap');
+  var thinkBub = document.getElementById('thinkBubble');
+  var elBox    = document.getElementById('elContainer');
+  var thinkOpen = false;
 
-  // 容器
-  var lilyC   = document.getElementById('lilyContainer');
-  var flowerC = document.getElementById('flowerContainer');
-  var fishC   = document.getElementById('fishContainer');
-  var grassC  = document.getElementById('grassContainer');
-  var pgC     = document.getElementById('pixelGrassContainer');
+  /* ====== 工具 ====== */
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
 
-  /* ==========================================
-     工具函数
-     ========================================== */
-  function rand(min, max) { return min + Math.random() * (max - min); }
-  function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+  /* ====== 碰撞检测 ====== */
+  // placed: [{x,y,w,h}, ...]  全部用百分比
+  var placed = [];
+  // 中央青蛙保留区
+  placed.push({ x: 38, y: 35, w: 24, h: 30 });
 
-  // 在池塘内生成安全位置（避开中央青蛙区域）
-  function safePos(wPct, hPct) {
-    var x, y, tries = 0;
-    do {
-      x = rand(8, 88 - wPct);
-      y = rand(10, 85 - hPct);
-      tries++;
-    } while (tries < 30 && x > 30 && x < 60 && y > 25 && y < 65);
-    return { x: x, y: y };
+  function overlaps(r) {
+    for (var i = 0; i < placed.length; i++) {
+      var p = placed[i];
+      if (r.x < p.x + p.w && r.x + r.w > p.x &&
+          r.y < p.y + p.h && r.y + r.h > p.y) return true;
+    }
+    return false;
+  }
+
+  function findPos(w, h, margin) {
+    margin = margin || 2;
+    for (var t = 0; t < 80; t++) {
+      var x = rand(4, 94 - w);
+      var y = rand(6, 90 - h);
+      var r = { x: x - margin, y: y - margin, w: w + margin * 2, h: h + margin * 2 };
+      if (!overlaps(r)) {
+        placed.push(r);
+        return { x: x, y: y };
+      }
+    }
+    // 失败则放在随机位置
+    return { x: rand(4, 90 - w), y: rand(6, 86 - h) };
+  }
+
+  /* ====== 创建装饰元素 ====== */
+  function makeEl(tag, cls, src, wPct) {
+    var el;
+    if (tag === 'img') {
+      el = document.createElement('img');
+      el.src = src;
+      el.alt = '';
+      el.draggable = false;
+    } else {
+      el = document.createElement('div');
+    }
+    el.className = 'el ' + cls + ' interactive';
+    el.style.width = wPct + '%';
+    return el;
   }
 
   /* ==========================================
-     1. 随机分布荷叶 ×5
+     荷叶 ×5
      ========================================== */
-  for (var i = 0; i < 5; i++) {
-    var lp = document.createElement('img');
-    lp.src = 'images/lily_pad.png';
-    lp.alt = '荷叶';
-    lp.className = 'decor lily-pad interactive';
-    var lpW = rand(11, 16);
-    lp.style.width = lpW + '%';
-    var pos = safePos(lpW, 8);
-    lp.style.left = pos.x + '%';
-    lp.style.top  = pos.y + '%';
-    lp.style.transform = 'rotate(' + rand(-20, 20).toFixed(0) + 'deg)';
-    lp.draggable = false;
-    lilyC.appendChild(lp);
-    // 点击摇晃 + 波纹
+  for (var li = 0; li < 5; li++) {
+    var lw = rand(10, 15);
+    var lh = lw * 0.6;  // 近似高宽比
+    var lpos = findPos(lw, lh);
+    var lp = makeEl('img', 'el-lily', 'images/lily_pad.png', lw);
+    lp.style.left = lpos.x + '%';
+    lp.style.top  = lpos.y + '%';
+    var rot = rand(-18, 18);
+    lp.style.transform = 'rotate(' + rot.toFixed(0) + 'deg)';
+    lp.style.setProperty('--rot', rot.toFixed(0) + 'deg');
+    elBox.appendChild(lp);
+
     (function(el) {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
-        el.classList.remove('wobble');
-        void el.offsetWidth;
-        el.classList.add('wobble');
+        el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
         createRipple(e.clientX, e.clientY);
         el.addEventListener('animationend', function h() {
-          el.classList.remove('wobble');
-          el.removeEventListener('animationend', h);
+          el.classList.remove('wobble'); el.removeEventListener('animationend', h);
         });
       });
     })(lp);
   }
 
   /* ==========================================
-     2. 随机分布小花 ×3
+     水草 PNG ×6
      ========================================== */
-  for (var fi = 0; fi < 3; fi++) {
-    var fl = document.createElement('img');
-    fl.src = 'images/flower.png';
-    fl.alt = '小花';
-    fl.className = 'decor flower interactive';
-    var flW = rand(4, 7);
-    fl.style.width = flW + '%';
-    var fpos = safePos(flW, 5);
-    fl.style.left = fpos.x + '%';
-    fl.style.top  = fpos.y + '%';
-    fl.style.animationDelay = rand(0, 3).toFixed(1) + 's';
-    fl.draggable = false;
-    flowerC.appendChild(fl);
-    // 点击摇晃
+  for (var gi = 0; gi < 6; gi++) {
+    var gw = rand(5, 9);
+    var gh = gw * 1.8;
+    var gpos = findPos(gw, gh);
+    var gr = makeEl('img', 'el-grass', 'images/grass.png', gw);
+    gr.style.left = gpos.x + '%';
+    gr.style.top  = gpos.y + '%';
+    gr.style.setProperty('--sx', Math.random() > 0.5 ? '-1' : '1');
+    gr.style.animationDelay = rand(0, 4).toFixed(1) + 's';
+    elBox.appendChild(gr);
+
     (function(el) {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
-        el.classList.remove('shake');
-        void el.offsetWidth;
-        el.classList.add('shake');
+        el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
         el.addEventListener('animationend', function h() {
-          el.classList.remove('shake');
-          el.removeEventListener('animationend', h);
+          el.classList.remove('shake'); el.removeEventListener('animationend', h);
+        });
+      });
+    })(gr);
+  }
+
+  /* ==========================================
+     CSS 像素水草 ×6（增加密度）
+     ========================================== */
+  for (var pi = 0; pi < 6; pi++) {
+    var pw = 2; var ph = 5;
+    var ppos = findPos(pw, ph, 1);
+    var pg = document.createElement('div');
+    pg.className = 'px-grass';
+    pg.style.left = ppos.x + '%';
+    pg.style.top  = ppos.y + '%';
+    pg.style.animationDelay = rand(0, 5).toFixed(1) + 's';
+    var h1 = randInt(18, 34); var h2 = randInt(12, 24);
+    pg.innerHTML = '<i style="height:' + h1 + 'px"></i><i style="height:' + h2 + 'px"></i>';
+    elBox.appendChild(pg);
+  }
+
+  /* ==========================================
+     小花 ×3
+     ========================================== */
+  for (var fi = 0; fi < 3; fi++) {
+    var fw = rand(3.5, 6);
+    var fh = fw * 1.2;
+    var fpos = findPos(fw, fh);
+    var fl = makeEl('img', 'el-flower', 'images/flower.png', fw);
+    fl.style.left = fpos.x + '%';
+    fl.style.top  = fpos.y + '%';
+    fl.style.animationDelay = rand(0, 3).toFixed(1) + 's';
+    elBox.appendChild(fl);
+
+    (function(el) {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+        el.addEventListener('animationend', function h() {
+          el.classList.remove('shake'); el.removeEventListener('animationend', h);
         });
       });
     })(fl);
   }
 
   /* ==========================================
-     3. 随机分布小鱼 ×4（朝向正确+游动）
+     小鱼 ×4 — 平滑游动 + 正确朝向 + 点击加速
      ========================================== */
+  var fishes = [];
+
   for (var fii = 0; fii < 4; fii++) {
-    var fish = document.createElement('img');
-    fish.src = 'images/fish.png';
-    fish.alt = '小鱼';
-    fish.className = 'decor fish interactive swimming';
-    var fishW = rand(5, 8);
-    fish.style.width = fishW + '%';
-    var fshPos = safePos(fishW, 5);
-    fish.style.left = fshPos.x + '%';
-    fish.style.top  = fshPos.y + '%';
-    fish.draggable = false;
+    var fishW = rand(5, 7.5);
+    var fishH = fishW * 0.6;
+    var fishPos = findPos(fishW, fishH);
 
-    // 游动参数（CSS 变量）
+    var fish = makeEl('img', 'el-fish', 'images/fish.png', fishW);
+    fish.style.left = fishPos.x + '%';
+    fish.style.top  = fishPos.y + '%';
+
+    // 初始朝向（1=右，-1=左）
     var dir = Math.random() > 0.5 ? 1 : -1;
-    var dx  = randInt(40, 100) + 'px';
-    var dx2 = randInt(80, 180) + 'px';
-    fish.style.setProperty('--fish-dir', dir);
-    fish.style.setProperty('--swim-dur', rand(10, 20).toFixed(0) + 's');
-    fish.style.setProperty('--swim-dx', (dir > 0 ? '' : '-') + dx);
-    fish.style.setProperty('--swim-dx2', (dir > 0 ? '' : '-') + dx2);
-    fish.style.setProperty('--swim-dy1', randInt(-12, 12) + 'px');
-    fish.style.setProperty('--swim-dy2', randInt(-8, 8) + 'px');
-    fish.style.setProperty('--swim-dy3', randInt(-12, 12) + 'px');
     fish.style.transform = 'scaleX(' + dir + ')';
-    fish.style.animationDelay = rand(0, 5).toFixed(1) + 's';
+    fish.dataset.dir = dir;
+    fish.dataset.baseX = fishPos.x;
+    fish.dataset.baseY = fishPos.y;
 
-    fishC.appendChild(fish);
+    elBox.appendChild(fish);
+    fishes.push(fish);
 
-    // 点击鱼：快速逃跑
-    (function(el, direction) {
-      el.addEventListener('click', function(e) {
-        e.stopPropagation();
-        el.classList.remove('swimming');
-        el.classList.add('flee');
-        // 向鱼当前朝向快速移动
-        var fleeDist = direction * randInt(120, 250);
-        el.style.transform = 'translateX(' + fleeDist + 'px) scaleX(' + direction + ')';
-        // 逃跑后回来继续游
-        setTimeout(function() {
-          el.classList.remove('flee');
-          el.style.transform = 'scaleX(' + direction + ')';
-          void el.offsetWidth;
-          el.classList.add('swimming');
-        }, 1200);
-      });
-    })(fish, dir);
-  }
-
-  /* ==========================================
-     4. 随机分布水草 PNG ×6 + CSS像素水草 ×5
-     ========================================== */
-  // PNG 水草
-  for (var gi = 0; gi < 6; gi++) {
-    var gr = document.createElement('img');
-    gr.src = 'images/grass.png';
-    gr.alt = '水草';
-    gr.className = 'decor grass interactive';
-    var grW = rand(6, 10);
-    gr.style.width = grW + '%';
-    // 水草分布在池塘边缘（上下左右）
-    var side = gi % 4; // 0上 1下 2左 3右
-    if (side === 0) {
-      gr.style.top = rand(2, 15) + '%';
-      gr.style.left = rand(5, 85) + '%';
-    } else if (side === 1) {
-      gr.style.bottom = rand(-4, 8) + '%';
-      gr.style.left = rand(5, 85) + '%';
-    } else if (side === 2) {
-      gr.style.left = rand(-2, 8) + '%';
-      gr.style.top = rand(15, 75) + '%';
-    } else {
-      gr.style.right = rand(-2, 8) + '%';
-      gr.style.top = rand(15, 75) + '%';
-    }
-    gr.style.animationDelay = rand(0, 4).toFixed(1) + 's';
-    if (Math.random() > 0.5) gr.style.transform = 'scaleX(-1)';
-    gr.draggable = false;
-    grassC.appendChild(gr);
-    // 点击摇晃
+    // 点击加速逃跑
     (function(el) {
       el.addEventListener('click', function(e) {
         e.stopPropagation();
-        el.classList.remove('shake');
-        void el.offsetWidth;
-        el.classList.add('shake');
-        el.addEventListener('animationend', function h() {
-          el.classList.remove('shake');
-          el.removeEventListener('animationend', h);
-        });
+        var curDir = parseInt(el.dataset.dir);
+        // 加速：沿当前朝向移动
+        el.classList.add('fast');
+        var curX = parseFloat(el.style.left);
+        var curY = parseFloat(el.style.top);
+        var newX = curX + curDir * rand(15, 30);
+        var newY = curY + rand(-8, 8);
+        // 边界限制
+        newX = Math.max(3, Math.min(90, newX));
+        newY = Math.max(5, Math.min(85, newY));
+        el.style.left = newX + '%';
+        el.style.top  = newY + '%';
+        // 1.5s 后恢复正常速度
+        setTimeout(function() {
+          el.classList.remove('fast');
+        }, 1600);
       });
-    })(gr);
+    })(fish);
   }
 
-  // CSS 像素水草（增加密度）
-  var pgColors = ['#5a9e58', '#6db86b', '#4d8f4b', '#7cc97a', '#58a556'];
-  for (var pi = 0; pi < 5; pi++) {
-    var pg = document.createElement('div');
-    pg.className = 'decor pixel-grass';
-    var pgSide = pi % 4;
-    if (pgSide === 0) {
-      pg.style.top = rand(3, 12) + '%';
-      pg.style.left = rand(10, 80) + '%';
-    } else if (pgSide === 1) {
-      pg.style.bottom = rand(0, 10) + '%';
-      pg.style.left = rand(10, 80) + '%';
-    } else if (pgSide === 2) {
-      pg.style.left = rand(2, 10) + '%';
-      pg.style.top = rand(20, 70) + '%';
-    } else {
-      pg.style.right = rand(2, 10) + '%';
-      pg.style.top = rand(20, 70) + '%';
-    }
-    pg.style.setProperty('--pg-color', pgColors[pi]);
-    pg.style.animationDelay = rand(0, 5).toFixed(1) + 's';
-    var h1 = randInt(18, 36) + 'px';
-    var h2 = randInt(12, 24) + 'px';
-    pg.style.height = h1;  // 容器高度
-    // 内部竖条
-    pg.innerHTML =
-      '<div style="position:absolute;bottom:0;left:0;width:4px;height:' + h1 +
-      ';background:linear-gradient(to top,' + pgColors[pi] + ',#7cc97a);image-rendering:pixelated;"></div>' +
-      '<div style="position:absolute;bottom:0;left:6px;width:3px;height:' + h2 +
-      ';background:linear-gradient(to top,' + pgColors[(pi+1)%5] + ',#90d890);transform:rotate(-6deg);image-rendering:pixelated;"></div>';
-    pgC.appendChild(pg);
+  // 鱼巡游定时器：每隔一段时间给鱼设新目标
+  function moveFish() {
+    fishes.forEach(function(fish) {
+      if (fish.classList.contains('fast')) return; // 逃跑中不干扰
+
+      var curX = parseFloat(fish.style.left);
+      var curY = parseFloat(fish.style.top);
+      var curDir = parseInt(fish.dataset.dir);
+
+      // 新目标
+      var dx = rand(8, 22) * (Math.random() > 0.5 ? 1 : -1);
+      var dy = rand(-6, 6);
+      var nx = curX + dx;
+      var ny = curY + dy;
+      nx = Math.max(3, Math.min(90, nx));
+      ny = Math.max(5, Math.min(85, ny));
+
+      // 判断新朝向
+      var newDir = dx > 0 ? 1 : -1;
+      if (newDir !== curDir) {
+        // 先转身
+        fish.style.transform = 'scaleX(' + newDir + ')';
+        fish.dataset.dir = newDir;
+      }
+
+      fish.style.left = nx + '%';
+      fish.style.top  = ny + '%';
+    });
   }
+  // 每 5-8 秒移动一次
+  setInterval(moveFish, 6000);
+  setTimeout(moveFish, 2000); // 初始延迟后开始
 
   /* ==========================================
-     5. 点击青蛙：跳跃 + 弹出思考框
+     青蛙点击：跳跃 + 切换思考气泡
      ========================================== */
   frogWrap.addEventListener('click', function(e) {
     e.stopPropagation();
-    frogWrap.classList.remove('jumping');
-    void frogWrap.offsetWidth;
+    // 跳跃动画
+    frogWrap.classList.remove('jumping'); void frogWrap.offsetWidth;
     frogWrap.classList.add('jumping');
     frogWrap.addEventListener('animationend', function h() {
-      frogWrap.classList.remove('jumping');
-      frogWrap.removeEventListener('animationend', h);
+      frogWrap.classList.remove('jumping'); frogWrap.removeEventListener('animationend', h);
     });
+    // 切换气泡
     setTimeout(function() {
       thinkOpen = !thinkOpen;
       thinkBub.classList.toggle('show', thinkOpen);
-    }, 280);
+    }, 250);
   });
 
   /* ==========================================
-     6. 点击水面空白：波纹 + 像素泡泡
+     点击水面空白：波纹 + 泡泡
      ========================================== */
   pond.addEventListener('click', function(e) {
     if (e.target.closest('.frog-wrap') ||
         e.target.closest('.think-bubble') ||
-        e.target.closest('.lily-pad') ||
-        e.target.closest('.fish') ||
-        e.target.closest('.flower') ||
-        e.target.closest('.grass')) return;
+        e.target.closest('.el')) return;
 
     createRipple(e.clientX, e.clientY);
     var n = randInt(3, 5);
-    for (var bi = 0; bi < n; bi++) {
-      createBubble(e.clientX, e.clientY, bi);
-    }
+    for (var b = 0; b < n; b++) createBubble(e.clientX, e.clientY, b);
   });
 
-  /* ==========================================
-     辅助：水波纹
-     ========================================== */
+  /* ====== 波纹 ====== */
   function createRipple(cx, cy) {
     var r = pond.getBoundingClientRect();
     var el = document.createElement('div');
     el.className = 'ripple';
     var img = document.createElement('img');
-    img.src = 'images/ripple.png';
-    img.alt = '';
+    img.src = 'images/ripple.png'; img.alt = '';
     el.appendChild(img);
     el.style.left = (cx - r.left) + 'px';
-    el.style.top  = (cy - r.top)  + 'px';
+    el.style.top  = (cy - r.top) + 'px';
     pond.appendChild(el);
     el.addEventListener('animationend', function() { el.remove(); });
   }
 
-  /* ==========================================
-     辅助：像素泡泡（使用 bubble.png）
-     ========================================== */
+  /* ====== 像素泡泡（bubble.png） ====== */
   function createBubble(cx, cy, idx) {
     var r = pond.getBoundingClientRect();
-    var s = randInt(10, 22);
+    var s = randInt(10, 20);
     var el = document.createElement('div');
     el.className = 'bubble';
-    el.style.left = (cx - r.left + rand(-20, 20)) + 'px';
-    el.style.top  = (cy - r.top  + rand(-10, 10)) + 'px';
+    el.style.left = (cx - r.left + rand(-18, 18)) + 'px';
+    el.style.top  = (cy - r.top + rand(-8, 8)) + 'px';
     el.style.animationDelay = (idx * 0.12) + 's';
-
     var img = document.createElement('img');
-    img.src = 'images/bubble.png';
-    img.alt = '';
-    img.style.width  = s + 'px';
-    img.style.height = s + 'px';
+    img.src = 'images/bubble.png'; img.alt = '';
+    img.style.width = s + 'px'; img.style.height = s + 'px';
     img.draggable = false;
     el.appendChild(img);
-
     pond.appendChild(el);
     el.addEventListener('animationend', function() { el.remove(); });
   }

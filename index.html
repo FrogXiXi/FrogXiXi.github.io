@@ -11,51 +11,43 @@
 </head>
 <body>
 
-  <div class="scene">
-    <h1 class="title">你好蛙！欢迎来这个池塘玩水🐸</h1>
+  <!-- 标题 -->
+  <h1 class="title">你好蛙！欢迎来这个池塘玩水🐸</h1>
 
-    <!-- ======== 池塘 ======== -->
-    <div class="pond" id="pond">
+  <!-- ======== 池塘（占满大部分视口） ======== -->
+  <div class="pond" id="pond">
 
-      <!-- 像素锯齿边缘（CSS 阶梯） -->
-      <div class="pixel-border pb-top"></div>
-      <div class="pixel-border pb-bottom"></div>
-      <div class="pixel-border pb-left"></div>
-      <div class="pixel-border pb-right"></div>
+    <!-- 像素锯齿边缘 -->
+    <div class="edge edge-t"></div>
+    <div class="edge edge-b"></div>
+    <div class="edge edge-l"></div>
+    <div class="edge edge-r"></div>
 
-      <!-- 水面波纹线 -->
-      <div class="water-line wl1"></div>
-      <div class="water-line wl2"></div>
-      <div class="water-line wl3"></div>
+    <!-- 水面波纹装饰线 -->
+    <div class="wline w1"></div>
+    <div class="wline w2"></div>
+    <div class="wline w3"></div>
+    <div class="wline w4"></div>
 
-      <!-- 坐姿青蛙（固定中央） -->
-      <div class="frog-wrap interactive" id="frogWrap">
-        <img src="images/frog_sit.png" alt="坐姿青蛙" class="frog" id="frog" />
-        <div class="frog-ripple"></div>
+    <!-- 青蛙（固定中央） -->
+    <div class="frog-wrap interactive" id="frogWrap">
+      <img src="images/frog_sit.png" alt="青蛙" class="frog" id="frog" />
+      <div class="frog-shadow"></div>
+    </div>
+
+    <!-- 思考气泡（点击青蛙弹出，在青蛙上方） -->
+    <div class="think-bubble" id="thinkBubble">
+      <img src="images/think.png" alt="" class="think-img" />
+      <div class="think-btns">
+        <a href="#" class="tbtn interactive" id="btnA" title="兔子冒险">🐇</a>
+        <a href="#" class="tbtn interactive" id="btnB" title="生日蛋糕">🌳</a>
       </div>
+    </div>
 
-      <!-- 思考对话框（点击青蛙弹出） -->
-      <div class="think-bubble" id="thinkBubble">
-        <img src="images/think.png" alt="思考" class="think-bg" />
-        <div class="think-buttons">
-          <a href="#" class="think-btn interactive" id="btnRabbit" title="兔子冒险">🐇</a>
-          <a href="#" class="think-btn interactive" id="btnTree" title="生日蛋糕">🌳</a>
-        </div>
-      </div>
+    <!-- JS 随机填充的容器 -->
+    <div id="elContainer"></div>
 
-      <!-- 荷叶容器（JS 随机分布） -->
-      <div id="lilyContainer"></div>
-      <!-- 小花容器 -->
-      <div id="flowerContainer"></div>
-      <!-- 小鱼容器 -->
-      <div id="fishContainer"></div>
-      <!-- 水草容器（PNG） -->
-      <div id="grassContainer"></div>
-      <!-- CSS 像素水草容器 -->
-      <div id="pixelGrassContainer"></div>
-
-    </div><!-- /.pond -->
-  </div><!-- /.scene -->
+  </div>
 
   <footer class="footer">🐸 蛙蛙池塘 &copy; 2026</footer>
   <script src="script.js"></script>
