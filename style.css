@@ -97,6 +97,32 @@ body {
   .frog-wrap  { width: clamp(80px, 18%, 130px); }
 }
 
+/* ===== 抓鱼计数器 ===== */
+.catch-counter {
+  position: absolute;
+  top: 8%;
+  right: 8%;
+  z-index: 20;
+  font-family: var(--pf);
+  font-size: clamp(1rem, 2.8vw, 1.6rem);
+  font-weight: 700;
+  color: #3b6b8a;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.6);
+  letter-spacing: 2px;
+  -webkit-font-smoothing: none;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+.catch-counter.pop {
+  animation: counterPop 0.35s ease;
+}
+@keyframes counterPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
 /* ==========================================================
    通用装饰元素 — 所有位置固定，不随机
    ========================================================== */

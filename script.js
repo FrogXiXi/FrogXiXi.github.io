@@ -11,7 +11,9 @@
   var pond     = document.getElementById('pond');
   var frogWrap = document.getElementById('frogWrap');
   var thinkBub = document.getElementById('thinkBubble');
+  var catchCounter = document.getElementById('catchCounter');
   var thinkOpen = false;
+  var catchCount = 0;
 
   /* ====== 工具函数 ====== */
   function rand(a, b) { return a + Math.random() * (b - a); }
@@ -252,6 +254,9 @@
       fishes.forEach(function (fish) {
         if (fish._hiding && fish._hideGrass === el) {
           emergeFromGrass(fish);
+          catchCount = Math.min(catchCount + 1, 99);
+          catchCounter.textContent = catchCount < 10 ? '0' + catchCount : String(catchCount);
+          catchCounter.classList.remove('pop'); void catchCounter.offsetWidth; catchCounter.classList.add('pop');
         }
       });
     });
