@@ -301,9 +301,9 @@
      思考气泡 — 箭头切换想法
      ========================================== */
   var thinkIdeas = [
-    { icon: '🦒', href: 'https://lijiangyu010.github.io/goldfish/' },
+    { icon: '🐇', href: 'https://www.66rpg.com/game/uncheck/1686870' },
     { icon: '🌳', href: '#' },
-    { icon: '🐇', href: '#' },
+    { icon: '🐸', href: '#' },
     { icon: '🌸', href: '#' },
     { icon: '⭐', href: '#' },
     { icon: '🍄', href: '#' }
