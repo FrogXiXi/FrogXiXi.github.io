@@ -100,9 +100,9 @@
   }
 
   /* ==========================================
-     小鱼 — 收集 HTML 中固定的鱼元素
+     小鱼 — 收集 HTML 中固定的鱼容器
      ========================================== */
-  var fishes = Array.prototype.slice.call(document.querySelectorAll('.el-fish'));
+  var fishes = Array.prototype.slice.call(document.querySelectorAll('.el-fish-wrap'));
 
   // 初始化朝向
   fishes.forEach(function (fish) {
@@ -178,8 +178,17 @@
   // 花朵点击摇晃
   addShakeInteraction('.el-flower');
 
-  // 水草点击摇晃
-  addShakeInteraction('.el-grass');
+  // 水草点击摇晃（针对容器内的img）
+  document.querySelectorAll('.el-grass-wrap').forEach(function (wrap) {
+    wrap.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var img = wrap.querySelector('.el-grass');
+      img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake');
+      img.addEventListener('animationend', function h() {
+        img.classList.remove('shake'); img.removeEventListener('animationend', h);
+      });
+    });
+  });
 
   // 芦苇点击摇晃
   document.querySelectorAll('.el-reed').forEach(function (el) {
@@ -204,14 +213,15 @@
     });
   });
 
-  // 荷叶点击晃动 + 波纹
-  document.querySelectorAll('.el-lily').forEach(function (el) {
-    el.addEventListener('click', function (e) {
+  // 荷叶点击晃动 + 波纹（容器内的img）
+  document.querySelectorAll('.el-lily-wrap').forEach(function (wrap) {
+    wrap.addEventListener('click', function (e) {
       e.stopPropagation();
-      el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
+      var img = wrap.querySelector('.el-lily');
+      img.classList.remove('wobble'); void img.offsetWidth; img.classList.add('wobble');
       createRipple(e.clientX, e.clientY);
-      el.addEventListener('animationend', function h() {
-        el.classList.remove('wobble'); el.removeEventListener('animationend', h);
+      img.addEventListener('animationend', function h() {
+        img.classList.remove('wobble'); img.removeEventListener('animationend', h);
       });
     });
   });
@@ -307,6 +317,9 @@
   pond.addEventListener('click', function (e) {
     if (e.target.closest('.frog-wrap') ||
         e.target.closest('.think-bubble') ||
+        e.target.closest('.el-fish-wrap') ||
+        e.target.closest('.el-grass-wrap') ||
+        e.target.closest('.el-lily-wrap') ||
         e.target.closest('.el')) return;
 
     // 只在椭圆水面区域内产生波纹和泡泡

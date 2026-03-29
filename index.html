@@ -22,50 +22,104 @@
     <!-- 芦苇 ×3（左上、右上、右下） -->
     <img src="images/reed.png" alt="芦苇" class="el el-reed" id="reed1" style="left:13%;top:12%;" />
     <img src="images/reed.png" alt="芦苇" class="el el-reed el-reed-flip" id="reed2" style="left:79%;top:10%;" />
-    <img src="images/reed.png" alt="芦苇" class="el el-reed el-reed-flip" id="reed3" style="left:82%;top:62%;" />
+    <img src="images/reed.png" alt="芦苇" class="el el-reed el-reed-flip" id="reed3" style="left:76%;top:60%;" />
 
-    <!-- 水草 ×7（池塘边缘分布） -->
-    <img src="images/grass.png" alt="水草" class="el el-grass" id="grass1" style="left:16%;top:48%;" />
-    <img src="images/grass.png" alt="水草" class="el el-grass" id="grass2" style="left:12%;top:32%;" />
-    <img src="images/grass.png" alt="水草" class="el el-grass el-grass-flip" id="grass3" style="left:78%;top:42%;" />
-    <img src="images/grass.png" alt="水草" class="el el-grass el-grass-flip" id="grass4" style="left:74%;top:68%;" />
-    <img src="images/grass.png" alt="水草" class="el el-grass" id="grass5" style="left:32%;top:78%;" />
-    <img src="images/grass.png" alt="水草" class="el el-grass el-grass-flip" id="grass6" style="left:56%;top:80%;" />
-    <img src="images/grass.png" alt="水草" class="el el-grass" id="grass7" style="left:20%;top:68%;" />
+    <!-- 水草 ×7（池塘边缘分布，大小不一） -->
+    <div class="el el-grass-wrap el-grass-lg" id="grassWrap1" style="left:16%;top:38%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
+    <div class="el el-grass-wrap el-grass-sm" id="grassWrap2" style="left:20%;top:52%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
+    <div class="el el-grass-wrap el-grass-md el-grass-flip" id="grassWrap3" style="left:76%;top:38%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
+    <div class="el el-grass-wrap el-grass-sm el-grass-flip" id="grassWrap4" style="left:72%;top:55%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
+    <div class="el el-grass-wrap el-grass-md" id="grassWrap5" style="left:30%;top:72%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
+    <div class="el el-grass-wrap el-grass-lg el-grass-flip" id="grassWrap6" style="left:60%;top:70%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
+    <div class="el el-grass-wrap el-grass-sm" id="grassWrap7" style="left:44%;top:76%;">
+      <div class="grass-ripple"></div>
+      <img src="images/grass.png" alt="水草" class="el-grass" />
+    </div>
 
     <!-- 花朵 ×3（池塘边缘） -->
     <img src="images/flower_pink.png" alt="粉花" class="el el-flower" id="flowerPink" style="left:20%;top:16%;" />
     <img src="images/flower_blue.png" alt="蓝花" class="el el-flower" id="flowerBlue" style="left:74%;top:14%;" />
-    <img src="images/flower_purple.png" alt="紫花" class="el el-flower" id="flowerPurple" style="left:82%;top:35%;" />
+    <img src="images/flower_purple.png" alt="紫花" class="el el-flower" id="flowerPurple" style="left:78%;top:38%;" />
 
-    <!-- 石头组 — 左下角（大中小聚在一起） -->
-    <img src="images/stone_gray.png" alt="灰石" class="el el-stone el-stone-lg" id="stoneGray1" style="left:13%;top:76%;" />
-    <img src="images/stone_dark_gray.png" alt="深灰石" class="el el-stone el-stone-md" id="stoneDark1" style="left:17%;top:80%;" />
-    <img src="images/stone_brown.png" alt="棕石" class="el el-stone el-stone-sm" id="stoneBrown1" style="left:11%;top:82%;" />
+    <!-- 石头组 — 左下角（后面的先渲染，前面的后渲染覆盖） -->
+    <img src="images/stone_gray.png" alt="灰石" class="el el-stone el-stone-lg" id="stoneGray1" style="left:14%;top:74%;z-index:2;" />
+    <img src="images/stone_dark_gray.png" alt="深灰石" class="el el-stone el-stone-md" id="stoneDark1" style="left:18%;top:77%;z-index:3;" />
+    <img src="images/stone_brown.png" alt="棕石" class="el el-stone el-stone-sm" id="stoneBrown1" style="left:12%;top:79%;z-index:4;" />
 
     <!-- 石头组 — 右下角 -->
-    <img src="images/stone_brown.png" alt="棕石" class="el el-stone el-stone-lg" id="stoneBrown2" style="left:77%;top:76%;" />
-    <img src="images/stone_gray.png" alt="灰石" class="el el-stone el-stone-sm" id="stoneGray2" style="left:81%;top:79%;" />
-    <img src="images/stone_dark_gray.png" alt="深灰石" class="el el-stone el-stone-md" id="stoneDark2" style="left:74%;top:80%;" />
+    <img src="images/stone_brown.png" alt="棕石" class="el el-stone el-stone-lg" id="stoneBrown2" style="left:76%;top:74%;z-index:2;" />
+    <img src="images/stone_gray.png" alt="灰石" class="el el-stone el-stone-md" id="stoneGray2" style="left:80%;top:77%;z-index:3;" />
+    <img src="images/stone_dark_gray.png" alt="深灰石" class="el el-stone el-stone-sm" id="stoneDark2" style="left:74%;top:79%;z-index:4;" />
 
     <!-- 石头 — 水中小石头 -->
-    <img src="images/stone_gray.png" alt="小石" class="el el-stone el-stone-water" id="stoneWater1" style="left:42%;top:72%;" />
-    <img src="images/stone_dark_gray.png" alt="小石" class="el el-stone el-stone-water" id="stoneWater2" style="left:60%;top:28%;" />
+    <img src="images/stone_gray.png" alt="小石" class="el el-stone el-stone-water" id="stoneWater1" style="left:42%;top:70%;" />
+    <img src="images/stone_dark_gray.png" alt="小石" class="el el-stone el-stone-water" id="stoneWater2" style="left:58%;top:26%;" />
 
-    <!-- 荷叶（装饰用） -->
-    <img src="images/lily_pad_small.png" alt="小荷叶" class="el el-lily" id="lilySmall1" style="left:28%;top:28%;" />
-    <img src="images/lily_pad_small.png" alt="小荷叶" class="el el-lily" id="lilySmall2" style="left:65%;top:65%;" />
-    <img src="images/lily_pad_large.png" alt="大荷叶" class="el el-lily" id="lilyLarge1" style="left:22%;top:62%;" />
-    <img src="images/lily_pad_large.png" alt="大荷叶" class="el el-lily el-lily-flip" id="lilyLarge2" style="left:62%;top:24%;" />
-    <img src="images/lily_pad_small.png" alt="小荷叶" class="el el-lily el-lily-flip" id="lilySmall3" style="left:38%;top:74%;" />
+    <!-- 荷叶（装饰用，带白色水纹） -->
+    <div class="el el-lily-wrap" style="left:28%;top:26%;">
+      <div class="lily-ripple"></div>
+      <img src="images/lily_pad_small.png" alt="小荷叶" class="el-lily" id="lilySmall1" />
+    </div>
+    <div class="el el-lily-wrap" style="left:65%;top:62%;">
+      <div class="lily-ripple"></div>
+      <img src="images/lily_pad_small.png" alt="小荷叶" class="el-lily" id="lilySmall2" />
+    </div>
+    <div class="el el-lily-wrap el-lily-wrap-lg" style="left:22%;top:58%;">
+      <div class="lily-ripple lily-ripple-lg"></div>
+      <img src="images/lily_pad_large.png" alt="大荷叶" class="el-lily" id="lilyLarge1" />
+    </div>
+    <div class="el el-lily-wrap el-lily-wrap-lg el-lily-flip" style="left:60%;top:22%;">
+      <div class="lily-ripple lily-ripple-lg"></div>
+      <img src="images/lily_pad_large.png" alt="大荷叶" class="el-lily" id="lilyLarge2" />
+    </div>
+    <div class="el el-lily-wrap el-lily-flip" style="left:38%;top:72%;">
+      <div class="lily-ripple"></div>
+      <img src="images/lily_pad_small.png" alt="小荷叶" class="el-lily" id="lilySmall3" />
+    </div>
 
-    <!-- 小鱼 ×6（固定初始位置，JS驱动游动） -->
-    <img src="images/fish_light_blue.png" alt="浅蓝鱼" class="el el-fish" id="fish1" style="left:30%;top:48%;" />
-    <img src="images/fish_blue_red.png" alt="蓝红鱼" class="el el-fish" id="fish2" style="left:60%;top:35%;" />
-    <img src="images/fish_brown.png" alt="棕鱼" class="el el-fish" id="fish3" style="left:35%;top:65%;" />
-    <img src="images/fish_orange.png" alt="橙鱼" class="el el-fish" id="fish4" style="left:62%;top:55%;" />
-    <img src="images/fish_light_blue.png" alt="浅蓝鱼" class="el el-fish" id="fish5" style="left:45%;top:30%;" />
-    <img src="images/fish_brown.png" alt="棕鱼" class="el el-fish" id="fish6" style="left:52%;top:68%;" />
+    <!-- 小鱼 ×6（带深蓝水底影子） -->
+    <div class="el el-fish-wrap" id="fish1" style="left:30%;top:48%;">
+      <div class="fish-shadow"></div>
+      <img src="images/fish_light_blue.png" alt="浅蓝鱼" class="el-fish-img" />
+    </div>
+    <div class="el el-fish-wrap" id="fish2" style="left:60%;top:35%;">
+      <div class="fish-shadow"></div>
+      <img src="images/fish_blue_red.png" alt="蓝红鱼" class="el-fish-img" />
+    </div>
+    <div class="el el-fish-wrap" id="fish3" style="left:35%;top:65%;">
+      <div class="fish-shadow"></div>
+      <img src="images/fish_brown.png" alt="棕鱼" class="el-fish-img" />
+    </div>
+    <div class="el el-fish-wrap" id="fish4" style="left:62%;top:55%;">
+      <div class="fish-shadow"></div>
+      <img src="images/fish_orange.png" alt="橙鱼" class="el-fish-img" />
+    </div>
+    <div class="el el-fish-wrap" id="fish5" style="left:45%;top:30%;">
+      <div class="fish-shadow"></div>
+      <img src="images/fish_light_blue.png" alt="浅蓝鱼" class="el-fish-img" />
+    </div>
+    <div class="el el-fish-wrap" id="fish6" style="left:52%;top:68%;">
+      <div class="fish-shadow"></div>
+      <img src="images/fish_brown.png" alt="棕鱼" class="el-fish-img" />
+    </div>
 
     <!-- 青蛙（固定中央，坐在专用荷叶上） -->
     <div class="frog-wrap interactive" id="frogWrap">
