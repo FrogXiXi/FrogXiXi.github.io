@@ -58,6 +58,7 @@
   function setFishDir(fish, fromX, toX) {
     if (toX === fromX) return;
     var d = toX > fromX ? 1 : -1;
+    fish.style.setProperty('--fish-dir', d);
     fish.style.transform = 'scaleX(' + d + ')';
     fish.dataset.dir = String(d);
   }
@@ -106,18 +107,157 @@
      ========================================== */
   var fishes = Array.prototype.slice.call(document.querySelectorAll('.el-fish'));
   var grasses = Array.prototype.slice.call(document.querySelectorAll('.el-grass'));
+  var activeFishDrag = null;
 
   // 初始化朝向
   fishes.forEach(function (fish) {
     var dir = Math.random() > 0.5 ? 1 : -1;
+    fish.style.setProperty('--fish-dir', dir);
     fish.style.transform = 'scaleX(' + dir + ')';
     fish.dataset.dir = String(dir);
   });
 
+  function clearFishFastState(fish) {
+    fish.classList.remove('fast');
+    if (fish._fastTimer) {
+      clearTimeout(fish._fastTimer);
+      fish._fastTimer = null;
+    }
+  }
+
+  function cancelFishHiding(fish) {
+    if (fish._hideTimer) {
+      clearTimeout(fish._hideTimer);
+      fish._hideTimer = null;
+    }
+    fish._hiding = false;
+    fish._hideGrass = null;
+    fish.classList.remove('hiding');
+  }
+
+  function getFishSizePct(fish) {
+    var pondRect = pond.getBoundingClientRect();
+    var fishRect = fish.getBoundingClientRect();
+    return {
+      w: fishRect.width / pondRect.width * 100,
+      h: fishRect.height / pondRect.height * 100
+    };
+  }
+
+  function fitFishInsideWater(x, y, w, h) {
+    var pos = clampFishPos(x, y, w, h);
+    var attempts = [0.08, 0.16, 0.24, 0.32, 0.44, 0.56, 0.68, 0.8, 1];
+    var i;
+
+    if (insideEllipse(pos.x, pos.y, w, h)) return pos;
+
+    for (i = 0; i < attempts.length; i++) {
+      var candidate = clampFishPos(
+        pos.x + (50 - pos.x) * attempts[i],
+        pos.y + (50 - pos.y) * attempts[i],
+        w,
+        h
+      );
+      if (insideEllipse(candidate.x, candidate.y, w, h)) return candidate;
+    }
+
+    return clampFishPos(50 - w / 2, 50 - h / 2, w, h);
+  }
+
+  function getFishCenterClientPos(fish) {
+    var rect = fish.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+  }
+
+  function spawnFishSplash(fish) {
+    var center = getFishCenterClientPos(fish);
+    createRipple(center.x + rand(-5, 5), center.y + rand(2, 8));
+    createBubble(center.x + rand(-8, 8), center.y + rand(-2, 8), 0);
+    createBubble(center.x + rand(-8, 8), center.y + rand(-2, 8), 1);
+  }
+
+  function stopFishSplash(fish) {
+    if (fish._splashTimer) {
+      clearInterval(fish._splashTimer);
+      fish._splashTimer = null;
+    }
+  }
+
+  function startFishSplash(fish) {
+    stopFishSplash(fish);
+    fish._splashTimer = setInterval(function () {
+      if (!fish._grabbed) {
+        stopFishSplash(fish);
+        return;
+      }
+      spawnFishSplash(fish);
+    }, 220);
+  }
+
+  function dragFishToPointer(fish, clientX, clientY) {
+    var pondRect = pond.getBoundingClientRect();
+    var size = getFishSizePct(fish);
+    var targetX = (clientX - pondRect.left) / pondRect.width * 100 - size.w / 2;
+    var targetY = (clientY - pondRect.top) / pondRect.height * 100 - size.h / 2;
+    var nextPos = fitFishInsideWater(targetX, targetY, size.w, size.h);
+    var curX = parseFloat(fish.style.left) || nextPos.x;
+
+    setFishDir(fish, curX, nextPos.x);
+    fish.style.left = nextPos.x + '%';
+    fish.style.top = nextPos.y + '%';
+  }
+
+  function releaseFishDrag(pointerId) {
+    if (!activeFishDrag) return;
+    if (pointerId !== undefined && activeFishDrag.pointerId !== pointerId) return;
+
+    var fish = activeFishDrag.fish;
+    activeFishDrag = null;
+    fish._grabbed = false;
+    fish.classList.remove('grabbed');
+    fish._suppressClickUntil = Date.now() + 260;
+    stopFishSplash(fish);
+    spawnFishSplash(fish);
+
+    if (fish.releasePointerCapture) {
+      try { fish.releasePointerCapture(pointerId); } catch (err) {}
+    }
+  }
+
   // 鱼点击：加速逃跑
   fishes.forEach(function (fish) {
+    fish.addEventListener('pointerdown', function (e) {
+      if (fish.classList.contains('hiding')) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      cancelFishHiding(fish);
+      clearFishFastState(fish);
+      fish.classList.remove('emerging');
+
+      fish._grabbed = true;
+      fish.classList.add('grabbed');
+      fish._suppressClickUntil = Date.now() + 260;
+      activeFishDrag = { fish: fish, pointerId: e.pointerId };
+
+      if (fish.setPointerCapture) {
+        try { fish.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+
+      dragFishToPointer(fish, e.clientX, e.clientY);
+      spawnFishSplash(fish);
+      startFishSplash(fish);
+    });
+
     fish.addEventListener('click', function (e) {
       e.stopPropagation();
+      if (fish._grabbed) return;
+      if (fish._suppressClickUntil && fish._suppressClickUntil > Date.now()) return;
+
       var curDir = parseInt(fish.dataset.dir, 10);
       var curX = parseFloat(fish.style.left);
       var curY = parseFloat(fish.style.top);
@@ -134,6 +274,7 @@
     fishes.forEach(function (fish) {
       if (fish.classList.contains('fast')) return;
       if (fish._hiding) return;
+      if (fish._grabbed) return;
       if (Math.random() < 0.05) return; // 偷懒不动
 
       var curX = parseFloat(fish.style.left);
@@ -175,7 +316,7 @@
   }
 
   function hideInGrass(fish) {
-    if (fish._hiding || fish.classList.contains('fast')) return;
+    if (fish._hiding || fish.classList.contains('fast') || fish._grabbed) return;
     // 随机选一株水草
     var grass = grasses[randInt(0, grasses.length - 1)];
     var gPos = getGrassPos(grass);
@@ -186,14 +327,19 @@
     fish.style.left = gPos.x + '%';
     fish.style.top = gPos.y + '%';
     // 到达后淡出躲藏
-    setTimeout(function () {
+    fish._hideTimer = setTimeout(function () {
       if (!fish._hiding) return;
       fish.classList.add('hiding');
+      fish._hideTimer = null;
     }, 3000);
   }
 
   function emergeFromGrass(fish) {
     if (!fish._hiding) return;
+    if (fish._hideTimer) {
+      clearTimeout(fish._hideTimer);
+      fish._hideTimer = null;
+    }
     fish._hiding = false;
     fish._hideGrass = null;
     fish.classList.remove('hiding');
@@ -214,7 +360,7 @@
   // 随机计时：每8-15秒随机一条鱼躲水草
   function scheduleHide() {
     setTimeout(function () {
-      var free = fishes.filter(function (f) { return !f._hiding && !f.classList.contains('fast'); });
+      var free = fishes.filter(function (f) { return !f._hiding && !f.classList.contains('fast') && !f._grabbed; });
       if (free.length > 0 && grasses.length > 0) {
         hideInGrass(free[randInt(0, free.length - 1)]);
       }
@@ -222,6 +368,20 @@
     }, rand(8000, 15000));
   }
   scheduleHide();
+
+  document.addEventListener('pointermove', function (e) {
+    if (!activeFishDrag || activeFishDrag.pointerId !== e.pointerId) return;
+    e.preventDefault();
+    dragFishToPointer(activeFishDrag.fish, e.clientX, e.clientY);
+  });
+
+  document.addEventListener('pointerup', function (e) {
+    releaseFishDrag(e.pointerId);
+  });
+
+  document.addEventListener('pointercancel', function (e) {
+    releaseFishDrag(e.pointerId);
+  });
 
   /* ==========================================
      花朵/水草/荷叶/芦苇/石头 — 点击交互
