@@ -218,13 +218,31 @@
     clearFishFastState(fish);
     fish.classList.remove('emerging');
 
+    var fishW = 7;
+    var fishH = 4.2;
     var curDir = parseInt(fish.dataset.dir, 10);
     var curX = parseFloat(fish.style.left);
     var curY = parseFloat(fish.style.top);
-    if (!pointInEllipse(curX + curDir * 5, curY)) {
+    var edgeProbe = clampFishPos(curX + curDir * 8, curY, fishW, fishH);
+    if (!insideEllipse(edgeProbe.x, edgeProbe.y, fishW, fishH)) {
       curDir = -curDir;
     }
     var clickTarget = resolveFishTarget(fish, curX, curY, curDir * rand(15, 30), rand(-8, 8));
+
+    if (clickTarget.x === curX && clickTarget.y === curY) {
+      clickTarget = resolveFishTarget(
+        fish,
+        curX,
+        curY,
+        (50 - curX) * 0.9,
+        (50 - curY) * 0.45
+      );
+    }
+
+    if (clickTarget.x === curX && clickTarget.y === curY) {
+      clickTarget = fitFishInsideWater(curX - curDir * 12, curY + rand(-4, 4), fishW, fishH);
+    }
+
     moveFishTo(fish, curX, clickTarget, 1600);
   }
 
