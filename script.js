@@ -108,6 +108,7 @@
   var fishes = Array.prototype.slice.call(document.querySelectorAll('.el-fish'));
   var grasses = Array.prototype.slice.call(document.querySelectorAll('.el-grass'));
   var activeFishDrag = null;
+  var fishDragThreshold = 8;
 
   // 初始化朝向
   fishes.forEach(function (fish) {
@@ -210,24 +211,63 @@
     fish.style.top = nextPos.y + '%';
   }
 
+  function triggerFishEscape(fish) {
+    if (fish._grabbed) return;
+
+    cancelFishHiding(fish);
+    clearFishFastState(fish);
+    fish.classList.remove('emerging');
+
+    var curDir = parseInt(fish.dataset.dir, 10);
+    var curX = parseFloat(fish.style.left);
+    var curY = parseFloat(fish.style.top);
+    if (!pointInEllipse(curX + curDir * 5, curY)) {
+      curDir = -curDir;
+    }
+    var clickTarget = resolveFishTarget(fish, curX, curY, curDir * rand(15, 30), rand(-8, 8));
+    moveFishTo(fish, curX, clickTarget, 1600);
+  }
+
+  function beginFishDrag(clientX, clientY) {
+    if (!activeFishDrag || activeFishDrag.dragging) return;
+
+    var fish = activeFishDrag.fish;
+    cancelFishHiding(fish);
+    clearFishFastState(fish);
+    fish.classList.remove('emerging');
+    fish._grabbed = true;
+    fish.classList.add('grabbed');
+    activeFishDrag.dragging = true;
+
+    dragFishToPointer(fish, clientX, clientY);
+    spawnFishSplash(fish);
+    startFishSplash(fish);
+  }
+
   function releaseFishDrag(pointerId) {
     if (!activeFishDrag) return;
     if (pointerId !== undefined && activeFishDrag.pointerId !== pointerId) return;
 
-    var fish = activeFishDrag.fish;
+    var drag = activeFishDrag;
+    var fish = drag.fish;
     activeFishDrag = null;
-    fish._grabbed = false;
-    fish.classList.remove('grabbed');
-    fish._suppressClickUntil = Date.now() + 260;
-    stopFishSplash(fish);
-    spawnFishSplash(fish);
+
+    if (drag.dragging) {
+      fish._grabbed = false;
+      fish.classList.remove('grabbed');
+      fish._suppressClickUntil = Date.now() + 260;
+      stopFishSplash(fish);
+      spawnFishSplash(fish);
+    }
 
     if (fish.releasePointerCapture) {
       try { fish.releasePointerCapture(pointerId); } catch (err) {}
     }
+
+    return drag;
   }
 
-  // 鱼点击：加速逃跑
+  // 鱼点击逃跑，拖动则抓取
   fishes.forEach(function (fish) {
     fish.addEventListener('pointerdown', function (e) {
       if (fish.classList.contains('hiding')) return;
@@ -235,37 +275,17 @@
       e.preventDefault();
       e.stopPropagation();
 
-      cancelFishHiding(fish);
-      clearFishFastState(fish);
-      fish.classList.remove('emerging');
-
-      fish._grabbed = true;
-      fish.classList.add('grabbed');
-      fish._suppressClickUntil = Date.now() + 260;
-      activeFishDrag = { fish: fish, pointerId: e.pointerId };
+      activeFishDrag = {
+        fish: fish,
+        pointerId: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        dragging: false
+      };
 
       if (fish.setPointerCapture) {
         try { fish.setPointerCapture(e.pointerId); } catch (err) {}
       }
-
-      dragFishToPointer(fish, e.clientX, e.clientY);
-      spawnFishSplash(fish);
-      startFishSplash(fish);
-    });
-
-    fish.addEventListener('click', function (e) {
-      e.stopPropagation();
-      if (fish._grabbed) return;
-      if (fish._suppressClickUntil && fish._suppressClickUntil > Date.now()) return;
-
-      var curDir = parseInt(fish.dataset.dir, 10);
-      var curX = parseFloat(fish.style.left);
-      var curY = parseFloat(fish.style.top);
-      if (!pointInEllipse(curX + curDir * 5, curY)) {
-        curDir = -curDir;
-      }
-      var clickTarget = resolveFishTarget(fish, curX, curY, curDir * rand(15, 30), rand(-8, 8));
-      moveFishTo(fish, curX, clickTarget, 1600);
     });
   });
 
@@ -371,12 +391,24 @@
 
   document.addEventListener('pointermove', function (e) {
     if (!activeFishDrag || activeFishDrag.pointerId !== e.pointerId) return;
+
+    if (!activeFishDrag.dragging) {
+      var deltaX = e.clientX - activeFishDrag.startX;
+      var deltaY = e.clientY - activeFishDrag.startY;
+      if (Math.sqrt(deltaX * deltaX + deltaY * deltaY) < fishDragThreshold) return;
+      beginFishDrag(e.clientX, e.clientY);
+    }
+
     e.preventDefault();
     dragFishToPointer(activeFishDrag.fish, e.clientX, e.clientY);
   });
 
   document.addEventListener('pointerup', function (e) {
-    releaseFishDrag(e.pointerId);
+    var drag = releaseFishDrag(e.pointerId);
+    if (!drag) return;
+    if (!drag.dragging) {
+      triggerFishEscape(drag.fish);
+    }
   });
 
   document.addEventListener('pointercancel', function (e) {
