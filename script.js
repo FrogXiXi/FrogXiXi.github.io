@@ -29,7 +29,7 @@
       ellB = 46;
     } else {
       ellA = 45;
-      ellB = 37;
+      ellB = 36;
     }
   }
   updateEllipse();
@@ -309,34 +309,56 @@
     { icon: '🍄', href: '#' }
   ];
   var thinkIdx = 0;
-  var thinkIconEl = document.getElementById('thinkIcon');
-  var thinkLink   = document.getElementById('thinkLink');
+  var thinkItemsEl = document.getElementById('thinkItems');
+  var thinkLinkPrev = document.getElementById('thinkLinkPrev');
+  var thinkLinkCurrent = document.getElementById('thinkLinkCurrent');
+  var thinkLinkNext = document.getElementById('thinkLinkNext');
+  var thinkIconPrev = document.getElementById('thinkIconPrev');
+  var thinkIconCurrent = document.getElementById('thinkIconCurrent');
+  var thinkIconNext = document.getElementById('thinkIconNext');
   var arrowLeft   = document.getElementById('arrowLeft');
   var arrowRight  = document.getElementById('arrowRight');
+  var thinkSwitching = false;
 
-  function syncCurrentIdea() {
-    thinkIconEl.textContent = thinkIdeas[thinkIdx].icon;
-    thinkLink.href = thinkIdeas[thinkIdx].href;
+  function normalizeIdeaIndex(i) {
+    var len = thinkIdeas.length;
+    return ((i % len) + len) % len;
   }
 
-  function updateArrows() {
-    arrowLeft.classList.toggle('disabled', thinkIdx <= 0);
-    arrowRight.classList.toggle('disabled', thinkIdx >= thinkIdeas.length - 1);
-    syncCurrentIdea();
+  function renderThinkItems() {
+    if (!thinkIdeas.length) return;
+    var prevIdx = normalizeIdeaIndex(thinkIdx - 1);
+    var currIdx = normalizeIdeaIndex(thinkIdx);
+    var nextIdx = normalizeIdeaIndex(thinkIdx + 1);
+
+    thinkIconPrev.textContent = thinkIdeas[prevIdx].icon;
+    thinkLinkPrev.href = thinkIdeas[prevIdx].href;
+
+    thinkIconCurrent.textContent = thinkIdeas[currIdx].icon;
+    thinkLinkCurrent.href = thinkIdeas[currIdx].href;
+
+    thinkIconNext.textContent = thinkIdeas[nextIdx].icon;
+    thinkLinkNext.href = thinkIdeas[nextIdx].href;
   }
 
-  function switchIdea(newIdx) {
-    if (newIdx < 0 || newIdx >= thinkIdeas.length) return false;
-    thinkIdx = newIdx;
-    thinkIconEl.classList.remove('switching');
-    void thinkIconEl.offsetWidth;
-    thinkIconEl.classList.add('switching');
-    setTimeout(syncCurrentIdea, 120);
-    thinkIconEl.addEventListener('animationend', function h() {
-      thinkIconEl.classList.remove('switching');
-      thinkIconEl.removeEventListener('animationend', h);
-    });
-    updateArrows();
+  function switchIdea(step) {
+    if (thinkSwitching || !thinkIdeas.length) return false;
+    thinkSwitching = true;
+
+    thinkItemsEl.classList.remove('switching');
+    void thinkItemsEl.offsetWidth;
+    thinkItemsEl.classList.add('switching');
+
+    setTimeout(function () {
+      thinkIdx = normalizeIdeaIndex(thinkIdx + step);
+      renderThinkItems();
+    }, 120);
+
+    setTimeout(function () {
+      thinkItemsEl.classList.remove('switching');
+      thinkSwitching = false;
+    }, 260);
+
     return true;
   }
 
@@ -353,16 +375,16 @@
   arrowLeft.addEventListener('click', function (e) {
     e.stopPropagation();
     arrowFeedback(arrowLeft);
-    switchIdea(thinkIdx - 1);
+    switchIdea(-1);
   });
 
   arrowRight.addEventListener('click', function (e) {
     e.stopPropagation();
     arrowFeedback(arrowRight);
-    switchIdea(thinkIdx + 1);
+    switchIdea(1);
   });
 
-  updateArrows();
+  renderThinkItems();
 
   /* ==========================================
      青蛙点击：跳跃 + 切换思考气泡

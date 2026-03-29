@@ -80,11 +80,19 @@
     <!-- 思考气泡（点击青蛙弹出） -->
     <div class="think-bubble" id="thinkBubble">
       <img src="images/thought_bubble.png" alt="" class="think-img" />
+      <button class="think-nav think-nav-left interactive" id="arrowLeft" type="button" aria-label="上一个想法">
+        <img src="images/arrow_left.png" alt="左" class="think-arrow" />
+      </button>
       <div class="think-content">
-        <img src="images/arrow_left.png" alt="左" class="think-arrow arrow-left interactive" id="arrowLeft" />
-        <a href="#" class="think-link interactive" id="thinkLink"><span class="think-icon" id="thinkIcon">🐇</span></a>
-        <img src="images/arrow_right.png" alt="右" class="think-arrow arrow-right interactive" id="arrowRight" />
+        <div class="think-items" id="thinkItems">
+          <a href="#" class="think-link think-link-side interactive" id="thinkLinkPrev"><span class="think-icon" id="thinkIconPrev">🌳</span></a>
+          <a href="#" class="think-link think-link-current interactive" id="thinkLinkCurrent"><span class="think-icon" id="thinkIconCurrent">🐇</span></a>
+          <a href="#" class="think-link think-link-side interactive" id="thinkLinkNext"><span class="think-icon" id="thinkIconNext">🐸</span></a>
+        </div>
       </div>
+      <button class="think-nav think-nav-right interactive" id="arrowRight" type="button" aria-label="下一个想法">
+        <img src="images/arrow_right.png" alt="右" class="think-arrow" />
+      </button>
     </div>
 
   </div>

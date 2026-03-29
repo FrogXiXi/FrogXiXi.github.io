@@ -90,10 +90,12 @@ body {
   .el-lily-lg    { width: 10% !important; }
   .el-stone  { width: 8% !important; }
   .el-reed   { width: 10% !important; }
-  .think-bubble { width: clamp(110px, 24%, 180px); }
-  .think-arrow { width: 26px; height: 26px; }
-  .think-link { width: 42px; height: 42px; }
-  .think-icon { font-size: clamp(1.3rem, 4vw, 2rem); }
+  .think-bubble { width: clamp(170px, 30%, 260px); }
+  .think-nav { width: 32px; height: 32px; }
+  .think-nav-left { left: -34px; }
+  .think-nav-right { right: -34px; }
+  .think-link { width: 36px; height: 36px; }
+  .think-icon { font-size: clamp(1rem, 3.8vw, 1.5rem); }
   .frog-wrap  { width: clamp(80px, 18%, 130px); }
 }
 
@@ -346,7 +348,7 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
-  width: clamp(90px, 16%, 160px);
+  width: clamp(150px, 23%, 240px);
 }
 .think-bubble.show {
   transform: translateX(-50%) scale(1);
@@ -356,60 +358,90 @@ body {
 .think-img { width: 100%; height: auto; display: block; }
 .think-content {
   position: absolute;
-  top: 28%;
+  top: 30%;
   left: 50%;
   transform: translateX(-50%);
+  width: 84%;
+}
+.think-items {
   display: flex;
-  gap: 2px;
   align-items: center;
   justify-content: center;
-  width: 85%;
+  gap: 6px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.think-items.switching {
+  transform: scale(0.95);
+  opacity: 0.72;
 }
 .think-link {
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.6);
-  border: 2px solid rgba(140,201,161,0.3);
-  transition: transform 0.2s, background 0.2s;
+  background: rgba(255,255,255,0.52);
+  border: 2px solid rgba(140,201,161,0.22);
+  transition: transform 0.24s ease, background 0.24s ease, opacity 0.24s ease, border-color 0.24s ease;
   pointer-events: auto;
 }
-.think-link:hover { transform: scale(1.15); background: rgba(140,201,161,0.25); }
+.think-link:hover { background: rgba(140,201,161,0.25); }
 .think-link:active { transform: scale(0.9); }
-.think-arrow {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  pointer-events: auto;
-  transition: transform 0.15s ease, opacity 0.15s;
-  flex-shrink: 0;
+.think-link-side {
+  opacity: 0.62;
+  transform: scale(0.86);
 }
-.think-arrow:hover { transform: scale(1.2); }
-.think-arrow:active { transform: scale(0.9); }
-.think-arrow.disabled { opacity: 0.3; }
-.think-arrow.disabled:hover { transform: scale(1); }
-.think-arrow.click-feedback { animation: arrowBounce 0.3s ease; }
+.think-link-current {
+  opacity: 1;
+  transform: scale(1.06);
+  border-color: rgba(120,191,150,0.75);
+  background: rgba(255,255,255,0.72);
+  box-shadow: 0 0 0 1px rgba(95,160,120,0.35);
+}
+.think-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(115,165,145,0.55);
+  border-radius: 6px;
+  background: rgba(244,253,248,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+.think-nav-left { left: -28px; }
+.think-nav-right { right: -28px; }
+.think-nav:hover {
+  background: rgba(203,238,222,0.78);
+  transform: translateY(-50%) scale(1.06);
+}
+.think-nav:active {
+  transform: translateY(-50%) scale(0.92);
+}
+.think-arrow {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  pointer-events: none;
+}
+.think-nav.click-feedback { animation: arrowBounce 0.28s ease; }
 @keyframes arrowBounce {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(0.75); }
-  100% { transform: scale(1); }
+  0%   { transform: translateY(-50%) scale(1); }
+  45%  { transform: translateY(-50%) scale(0.78); }
+  100% { transform: translateY(-50%) scale(1); }
 }
 .think-icon {
-  font-size: clamp(1rem, 3vw, 1.6rem);
+  font-size: clamp(0.9rem, 2.5vw, 1.35rem);
   line-height: 1;
   user-select: none;
-  transition: opacity 0.2s, transform 0.2s;
-}
-.think-icon.switching { animation: iconSwitch 0.3s ease; }
-@keyframes iconSwitch {
-  0%   { opacity: 1; transform: scale(1); }
-  40%  { opacity: 0; transform: scale(0.5); }
-  60%  { opacity: 0; transform: scale(0.5); }
-  100% { opacity: 1; transform: scale(1); }
+  transition: opacity 0.24s ease, transform 0.24s ease;
 }
 
 /* ==========================================================
@@ -457,12 +489,17 @@ body {
 @media (max-width: 768px) {
   .pond { width: 98vw; max-height: 600px; }
   .frog-wrap { width: clamp(55px, 16%, 100px); }
-  .think-bubble { width: clamp(80px, 22%, 140px); }
+  .think-bubble { width: clamp(145px, 30%, 220px); }
+  .think-nav-left { left: -26px; }
+  .think-nav-right { right: -26px; }
 }
 @media (max-width: 480px) {
   .title { font-size: 0.6rem; padding: 10px 8px 6px; }
   .pond { width: 99vw; min-height: 280px; border-radius: 8px; }
   .frog-wrap { width: clamp(48px, 20%, 85px); }
-  .think-bubble { width: clamp(70px, 26%, 120px); }
-  .think-arrow { width: 16px; height: 16px; }
+  .think-bubble { width: clamp(135px, 36%, 200px); }
+  .think-nav { width: 24px; height: 24px; }
+  .think-nav-left { left: -22px; }
+  .think-nav-right { right: -22px; }
+  .think-arrow { width: 14px; height: 14px; }
 }
