@@ -345,9 +345,10 @@
     if (thinkSwitching || !thinkIdeas.length) return false;
     thinkSwitching = true;
 
-    thinkItemsEl.classList.remove('switching');
+    thinkItemsEl.classList.remove('switching-prev');
+    thinkItemsEl.classList.remove('switching-next');
     void thinkItemsEl.offsetWidth;
-    thinkItemsEl.classList.add('switching');
+    thinkItemsEl.classList.add(step < 0 ? 'switching-prev' : 'switching-next');
 
     setTimeout(function () {
       thinkIdx = normalizeIdeaIndex(thinkIdx + step);
@@ -355,7 +356,8 @@
     }, 120);
 
     setTimeout(function () {
-      thinkItemsEl.classList.remove('switching');
+      thinkItemsEl.classList.remove('switching-prev');
+      thinkItemsEl.classList.remove('switching-next');
       thinkSwitching = false;
     }, 260);
 
