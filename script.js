@@ -386,6 +386,25 @@
     switchIdea(1);
   });
 
+  thinkLinkPrev.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    switchIdea(-1);
+  });
+
+  thinkLinkNext.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    switchIdea(1);
+  });
+
+  thinkLinkCurrent.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (thinkLinkCurrent.getAttribute('href') === '#') {
+      e.preventDefault();
+    }
+  });
+
   renderThinkItems();
 
   /* ==========================================

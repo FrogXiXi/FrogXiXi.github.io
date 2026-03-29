@@ -90,12 +90,13 @@ body {
   .el-lily-lg    { width: 10% !important; }
   .el-stone  { width: 8% !important; }
   .el-reed   { width: 10% !important; }
-  .think-bubble { width: clamp(170px, 30%, 260px); }
-  .think-nav { width: 32px; height: 32px; }
-  .think-nav-left { left: -34px; }
-  .think-nav-right { right: -34px; }
-  .think-link { width: 36px; height: 36px; }
-  .think-icon { font-size: clamp(1rem, 3.8vw, 1.5rem); }
+  .think-bubble { width: clamp(168px, 31%, 232px); }
+  .think-nav { width: 40px; height: 40px; }
+  .think-nav-left { left: -40px; }
+  .think-nav-right { right: -40px; }
+  .think-arrow { width: 22px; height: 22px; }
+  .think-link { width: 40px; height: 40px; }
+  .think-icon { font-size: clamp(1.1rem, 4vw, 1.6rem); }
   .frog-wrap  { width: clamp(80px, 18%, 130px); }
 }
 
@@ -348,7 +349,7 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
-  width: clamp(150px, 23%, 240px);
+  width: clamp(126px, 18%, 190px);
 }
 .think-bubble.show {
   transform: translateX(-50%) scale(1);
@@ -357,7 +358,7 @@ body {
 .think-img { width: 100%; height: auto; display: block; }
 .think-content {
   position: absolute;
-  top: 30%;
+  top: 31%;
   left: 50%;
   transform: translateX(-50%);
   width: 84%;
@@ -367,7 +368,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 .think-items.switching-prev {
@@ -383,8 +384,8 @@ body {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: rgba(255,255,255,0.52);
   border: 2px solid rgba(140,201,161,0.22);
@@ -394,12 +395,12 @@ body {
 .think-link:hover { background: rgba(140,201,161,0.25); }
 .think-link:active { transform: scale(0.9); }
 .think-link-side {
-  opacity: 0.62;
-  transform: scale(0.86);
+  opacity: 0.68;
+  transform: scale(0.82);
 }
 .think-link-current {
   opacity: 1;
-  transform: scale(1.06);
+  transform: scale(1.08);
   border-color: rgba(120,191,150,0.75);
   background: rgba(255,255,255,0.72);
   box-shadow: 0 0 0 1px rgba(95,160,120,0.35);
@@ -409,8 +410,8 @@ body {
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border: 2px solid rgba(115,165,145,0.55);
   border-radius: 6px;
   background: rgba(244,253,248,0.7);
@@ -420,8 +421,8 @@ body {
   pointer-events: auto;
   transition: transform 0.16s ease, background 0.16s ease;
 }
-.think-nav-left { left: -28px; }
-.think-nav-right { right: -28px; }
+.think-nav-left { left: -36px; }
+.think-nav-right { right: -36px; }
 .think-nav:hover {
   background: rgba(203,238,222,0.78);
   transform: translateY(-50%) scale(1.06);
@@ -430,8 +431,8 @@ body {
   transform: translateY(-50%) scale(0.92);
 }
 .think-arrow {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   pointer-events: none;
 }
@@ -442,7 +443,7 @@ body {
   100% { transform: translateY(-50%) scale(1); }
 }
 .think-icon {
-  font-size: clamp(0.9rem, 2.5vw, 1.35rem);
+  font-size: clamp(1rem, 2.8vw, 1.55rem);
   line-height: 1;
   user-select: none;
   transition: opacity 0.24s ease, transform 0.24s ease;
@@ -493,17 +494,19 @@ body {
 @media (max-width: 768px) {
   .pond { width: 98vw; max-height: 600px; }
   .frog-wrap { width: clamp(55px, 16%, 100px); }
-  .think-bubble { width: clamp(145px, 30%, 220px); }
-  .think-nav-left { left: -26px; }
-  .think-nav-right { right: -26px; }
+  .think-bubble { width: clamp(142px, 28%, 205px); }
+  .think-nav { width: 32px; height: 32px; }
+  .think-nav-left { left: -32px; }
+  .think-nav-right { right: -32px; }
+  .think-arrow { width: 18px; height: 18px; }
 }
 @media (max-width: 480px) {
   .title { font-size: 0.6rem; padding: 10px 8px 6px; }
   .pond { width: 99vw; min-height: 280px; border-radius: 8px; }
   .frog-wrap { width: clamp(48px, 20%, 85px); }
-  .think-bubble { width: clamp(135px, 36%, 200px); }
-  .think-nav { width: 24px; height: 24px; }
-  .think-nav-left { left: -22px; }
-  .think-nav-right { right: -22px; }
-  .think-arrow { width: 14px; height: 14px; }
+  .think-bubble { width: clamp(132px, 35%, 188px); }
+  .think-nav { width: 30px; height: 30px; }
+  .think-nav-left { left: -28px; }
+  .think-nav-right { right: -28px; }
+  .think-arrow { width: 18px; height: 18px; }
 }
