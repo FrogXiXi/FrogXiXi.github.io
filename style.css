@@ -169,11 +169,48 @@ body {
   100% { transform: rotate(0); }
 }
 
+/* ===== 芦苇点击摇晃 ===== */
+.el-reed.shake {
+  animation: reedShake 0.6s ease-in-out !important;
+}
+@keyframes reedShake {
+  0%   { transform: rotate(0); }
+  20%  { transform: rotate(6deg); }
+  40%  { transform: rotate(-5deg); }
+  60%  { transform: rotate(4deg); }
+  80%  { transform: rotate(-2deg); }
+  100% { transform: rotate(0); }
+}
+.el-reed-flip.shake {
+  animation: reedShakeFlip 0.6s ease-in-out !important;
+}
+@keyframes reedShakeFlip {
+  0%   { transform: scaleX(-1) rotate(0); }
+  20%  { transform: scaleX(-1) rotate(6deg); }
+  40%  { transform: scaleX(-1) rotate(-5deg); }
+  60%  { transform: scaleX(-1) rotate(4deg); }
+  80%  { transform: scaleX(-1) rotate(-2deg); }
+  100% { transform: scaleX(-1) rotate(0); }
+}
+
 /* ===== 石头 ===== */
 .el-stone {
   width: 6%;
   height: auto;
   z-index: 2;
+  transition: transform 0.2s ease;
+}
+.el-stone-lg { width: 7%; }
+.el-stone-md { width: 5%; }
+.el-stone-sm { width: 3.5%; }
+.el-stone-water { width: 2.8%; z-index: 3; opacity: 0.85; }
+.el-stone.bounce {
+  animation: stoneBounce 0.35s ease !important;
+}
+@keyframes stoneBounce {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
 }
 
 /* ===== 荷叶 ===== */

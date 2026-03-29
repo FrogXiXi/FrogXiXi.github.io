@@ -160,10 +160,29 @@
   setTimeout(moveFish, 1500);
 
   /* ==========================================
-     花朵/水草/荷叶/芦苇 — 点击交互
+     花朵/水草/荷叶/芦苇/石头 — 点击交互
      ========================================== */
+  // 通用摇晃交互
+  function addShakeInteraction(selector) {
+    document.querySelectorAll(selector).forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+        el.addEventListener('animationend', function h() {
+          el.classList.remove('shake'); el.removeEventListener('animationend', h);
+        });
+      });
+    });
+  }
+
   // 花朵点击摇晃
-  document.querySelectorAll('.el-flower').forEach(function (el) {
+  addShakeInteraction('.el-flower');
+
+  // 水草点击摇晃
+  addShakeInteraction('.el-grass');
+
+  // 芦苇点击摇晃
+  document.querySelectorAll('.el-reed').forEach(function (el) {
     el.addEventListener('click', function (e) {
       e.stopPropagation();
       el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
@@ -173,13 +192,14 @@
     });
   });
 
-  // 水草点击摇晃
-  document.querySelectorAll('.el-grass').forEach(function (el) {
+  // 石头点击弹跳
+  document.querySelectorAll('.el-stone').forEach(function (el) {
     el.addEventListener('click', function (e) {
       e.stopPropagation();
-      el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+      el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce');
+      createRipple(e.clientX, e.clientY);
       el.addEventListener('animationend', function h() {
-        el.classList.remove('shake'); el.removeEventListener('animationend', h);
+        el.classList.remove('bounce'); el.removeEventListener('animationend', h);
       });
     });
   });
