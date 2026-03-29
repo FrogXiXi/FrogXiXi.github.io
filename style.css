@@ -149,39 +149,42 @@ body {
 .el-grass-md { width: 5.5%; }
 .el-grass-sm { width: 4%; }
 
-/* 水草底部蓝色波纹线 */
+/* 水草底部深蓝色不连续椭圆线（静态） */
 .grass-ripple {
   position: absolute;
-  bottom: 2%;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 140%;
-  height: 6px;
+  width: 130%;
+  height: 10px;
   pointer-events: none;
   z-index: -1;
 }
-.grass-ripple::before,
+.grass-ripple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-bottom-color: rgba(60, 130, 170, 0.5);
+  border-left-color: rgba(60, 130, 170, 0.35);
+  border-right-color: rgba(60, 130, 170, 0.35);
+}
 .grass-ripple::after {
   content: '';
   position: absolute;
-  left: 5%;
-  width: 90%;
-  height: 2px;
-  border-radius: 50%;
-  background: rgba(100, 180, 220, 0.45);
-  animation: grassRippleWave 3s ease-in-out infinite;
-}
-.grass-ripple::before { top: 0; }
-.grass-ripple::after {
   top: 3px;
-  width: 70%;
-  left: 15%;
-  background: rgba(100, 180, 220, 0.3);
-  animation-delay: 0.6s;
-}
-@keyframes grassRippleWave {
-  0%, 100% { transform: scaleX(1); opacity: 0.5; }
-  50%      { transform: scaleX(1.15); opacity: 0.8; }
+  left: 10%;
+  width: 80%;
+  height: 6px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-bottom-color: rgba(60, 130, 170, 0.3);
+  border-left-color: rgba(60, 130, 170, 0.2);
+  border-right-color: rgba(60, 130, 170, 0.2);
 }
 @keyframes grassSway {
   0%, 100% { transform: rotate(0deg); }
@@ -275,36 +278,26 @@ body {
 .el-lily-wrap:hover .el-lily { filter: brightness(1.06); }
 .el-lily-wrap .el-lily.wobble { animation: wobble 0.8s ease-in-out; }
 
-/* 荷叶白色水纹线 */
+/* 荷叶白色围绕阴影（静态立体感） */
 .lily-ripple {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 150%;
-  height: 150%;
+  width: 120%;
+  height: 120%;
   pointer-events: none;
   z-index: -1;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-  animation: lilyRipplePulse 4s ease-in-out infinite;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.35) 40%,
+    rgba(255, 255, 255, 0.15) 65%,
+    transparent 80%
+  );
+  box-shadow: 0 1px 4px rgba(255, 255, 255, 0.3);
 }
-.lily-ripple::after {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: lilyRipplePulse 4s ease-in-out infinite 0.8s;
-}
-.lily-ripple-lg { width: 140%; height: 140%; }
-@keyframes lilyRipplePulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-  50%      { transform: translate(-50%, -50%) scale(1.08); opacity: 0.9; }
-}
+.lily-ripple-lg { width: 115%; height: 115%; }
 @keyframes wobble {
   0%   { transform: rotate(0deg); }
   20%  { transform: rotate(8deg); }
