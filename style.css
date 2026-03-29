@@ -229,13 +229,13 @@ body {
 .el-stone {
   width: 6%;
   height: auto;
-  z-index: 2;
+  z-index: 13;
   transition: transform 0.2s ease;
 }
 .el-stone-lg { width: 7%; }
 .el-stone-md { width: 5%; }
 .el-stone-sm { width: 3.5%; }
-.el-stone-water { width: 2.8%; z-index: 3; opacity: 0.85; }
+.el-stone-water { width: 2.8%; z-index: 13; opacity: 0.85; }
 .el-stone.bounce {
   animation: stoneBounce 0.35s ease !important;
 }
