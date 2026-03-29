@@ -259,6 +259,7 @@ body {
 .el-lily-flip { transform: scaleX(-1); }
 .el-lily:hover { filter: brightness(1.06); }
 .el-lily.wobble { animation: wobble 0.8s ease-in-out; }
+.el-lily.el-lily-flip.wobble { animation: wobbleFlip 0.8s ease-in-out; }
 @keyframes wobble {
   0%   { transform: rotate(0deg); }
   20%  { transform: rotate(8deg); }
@@ -266,6 +267,14 @@ body {
   60%  { transform: rotate(4deg); }
   80%  { transform: rotate(-2deg); }
   100% { transform: rotate(0deg); }
+}
+@keyframes wobbleFlip {
+  0%   { transform: scaleX(-1) rotate(0deg); }
+  20%  { transform: scaleX(-1) rotate(8deg); }
+  40%  { transform: scaleX(-1) rotate(-6deg); }
+  60%  { transform: scaleX(-1) rotate(4deg); }
+  80%  { transform: scaleX(-1) rotate(-2deg); }
+  100% { transform: scaleX(-1) rotate(0deg); }
 }
 
 /* ===== 小鱼 — 平滑游动 ===== */
