@@ -29,7 +29,7 @@
       ellB = 46;
     } else {
       ellA = 45;
-      ellB = 38;
+      ellB = 37;
     }
   }
   updateEllipse();
