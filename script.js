@@ -100,9 +100,10 @@
   }
 
   /* ==========================================
-     小鱼 — 收集 HTML 中固定的鱼容器
+     小鱼 — 收集 HTML 中固定的鱼元素
      ========================================== */
-  var fishes = Array.prototype.slice.call(document.querySelectorAll('.el-fish-wrap'));
+  var fishes = Array.prototype.slice.call(document.querySelectorAll('.el-fish'));
+  var grasses = Array.prototype.slice.call(document.querySelectorAll('.el-grass'));
 
   // 初始化朝向
   fishes.forEach(function (fish) {
@@ -130,6 +131,7 @@
   function moveFish() {
     fishes.forEach(function (fish) {
       if (fish.classList.contains('fast')) return;
+      if (fish._hiding) return;
       if (Math.random() < 0.05) return; // 偷懒不动
 
       var curX = parseFloat(fish.style.left);
@@ -160,6 +162,66 @@
   setTimeout(moveFish, 1500);
 
   /* ==========================================
+     鱼躲水草机制 — 随机躲藏，点击水草出来
+     ========================================== */
+  // 每条鱼有一定几率游到水草位置躲藏
+  function getGrassPos(grass) {
+    return {
+      x: parseFloat(grass.style.left),
+      y: parseFloat(grass.style.top)
+    };
+  }
+
+  function hideInGrass(fish) {
+    if (fish._hiding || fish.classList.contains('fast')) return;
+    // 随机选一株水草
+    var grass = grasses[randInt(0, grasses.length - 1)];
+    var gPos = getGrassPos(grass);
+    fish._hiding = true;
+    fish._hideGrass = grass;
+    var curX = parseFloat(fish.style.left);
+    setFishDir(fish, curX, gPos.x);
+    fish.style.left = gPos.x + '%';
+    fish.style.top = gPos.y + '%';
+    // 到达后淡出躲藏
+    setTimeout(function () {
+      if (!fish._hiding) return;
+      fish.classList.add('hiding');
+    }, 3000);
+  }
+
+  function emergeFromGrass(fish) {
+    if (!fish._hiding) return;
+    fish._hiding = false;
+    fish._hideGrass = null;
+    fish.classList.remove('hiding');
+    fish.classList.add('emerging');
+    // 加速游走
+    var curX = parseFloat(fish.style.left);
+    var curY = parseFloat(fish.style.top);
+    var curDir = parseInt(fish.dataset.dir, 10) || 1;
+    var target = resolveFishTarget(fish, curX, curY, curDir * rand(15, 25), rand(-8, 8));
+    setFishDir(fish, curX, target.x);
+    fish.style.left = target.x + '%';
+    fish.style.top = target.y + '%';
+    setTimeout(function () {
+      fish.classList.remove('emerging');
+    }, 1500);
+  }
+
+  // 随机计时：每8-15秒随机一条鱼躲水草
+  function scheduleHide() {
+    setTimeout(function () {
+      var free = fishes.filter(function (f) { return !f._hiding && !f.classList.contains('fast'); });
+      if (free.length > 0 && grasses.length > 0) {
+        hideInGrass(free[randInt(0, free.length - 1)]);
+      }
+      scheduleHide();
+    }, rand(8000, 15000));
+  }
+  scheduleHide();
+
+  /* ==========================================
      花朵/水草/荷叶/芦苇/石头 — 点击交互
      ========================================== */
   // 通用摇晃交互
@@ -178,14 +240,19 @@
   // 花朵点击摇晃
   addShakeInteraction('.el-flower');
 
-  // 水草点击摇晃（针对容器内的img）
-  document.querySelectorAll('.el-grass-wrap').forEach(function (wrap) {
-    wrap.addEventListener('click', function (e) {
+  // 水草点击摇晃 + 赶鱼出来
+  document.querySelectorAll('.el-grass').forEach(function (el) {
+    el.addEventListener('click', function (e) {
       e.stopPropagation();
-      var img = wrap.querySelector('.el-grass');
-      img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake');
-      img.addEventListener('animationend', function h() {
-        img.classList.remove('shake'); img.removeEventListener('animationend', h);
+      el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+      el.addEventListener('animationend', function h() {
+        el.classList.remove('shake'); el.removeEventListener('animationend', h);
+      });
+      // 赶出躲在这株水草里的鱼
+      fishes.forEach(function (fish) {
+        if (fish._hiding && fish._hideGrass === el) {
+          emergeFromGrass(fish);
+        }
       });
     });
   });
@@ -213,15 +280,14 @@
     });
   });
 
-  // 荷叶点击晃动 + 波纹（容器内的img）
-  document.querySelectorAll('.el-lily-wrap').forEach(function (wrap) {
-    wrap.addEventListener('click', function (e) {
+  // 荷叶点击晃动 + 波纹
+  document.querySelectorAll('.el-lily').forEach(function (el) {
+    el.addEventListener('click', function (e) {
       e.stopPropagation();
-      var img = wrap.querySelector('.el-lily');
-      img.classList.remove('wobble'); void img.offsetWidth; img.classList.add('wobble');
+      el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
       createRipple(e.clientX, e.clientY);
-      img.addEventListener('animationend', function h() {
-        img.classList.remove('wobble'); img.removeEventListener('animationend', h);
+      el.addEventListener('animationend', function h() {
+        el.classList.remove('wobble'); el.removeEventListener('animationend', h);
       });
     });
   });
@@ -317,9 +383,6 @@
   pond.addEventListener('click', function (e) {
     if (e.target.closest('.frog-wrap') ||
         e.target.closest('.think-bubble') ||
-        e.target.closest('.el-fish-wrap') ||
-        e.target.closest('.el-grass-wrap') ||
-        e.target.closest('.el-lily-wrap') ||
         e.target.closest('.el')) return;
 
     // 只在椭圆水面区域内产生波纹和泡泡
