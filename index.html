@@ -14,40 +14,57 @@
   <!-- 标题 -->
   <h1 class="title">你好蛙！欢迎来这个池塘玩水^^</h1>
 
-  <!-- ======== 池塘（占满大部分视口） ======== -->
+  <!-- ======== 池塘主容器 ======== -->
   <div class="pond" id="pond">
 
-    <!-- 像素锯齿边缘 -->
-    <div class="edge edge-t"></div>
-    <div class="edge edge-b"></div>
-    <div class="edge edge-l"></div>
-    <div class="edge edge-r"></div>
+    <!-- ===== 固定装饰元素（位置与预览图一致） ===== -->
 
-    <!-- 水面波纹装饰线 -->
-    <div class="wline w1"></div>
-    <div class="wline w2"></div>
-    <div class="wline w3"></div>
-    <div class="wline w4"></div>
+    <!-- 芦苇 -->
+    <img src="images/reed.png" alt="芦苇" class="el el-reed" id="reed1" style="left:1%;top:8%;" />
+    <img src="images/reed.png" alt="芦苇" class="el el-reed el-reed-flip" id="reed2" style="left:86%;top:5%;" />
 
-    <!-- 青蛙（固定中央） -->
+    <!-- 水草 -->
+    <img src="images/grass.png" alt="水草" class="el el-grass" id="grass1" style="left:6%;top:55%;" />
+    <img src="images/grass.png" alt="水草" class="el el-grass el-grass-flip" id="grass2" style="left:84%;top:50%;" />
+
+    <!-- 花朵 -->
+    <img src="images/flower_pink.png" alt="粉花" class="el el-flower" id="flowerPink" style="left:10%;top:12%;" />
+    <img src="images/flower_blue.png" alt="蓝花" class="el el-flower" id="flowerBlue" style="left:80%;top:10%;" />
+    <img src="images/flower_purple.png" alt="紫花" class="el el-flower" id="flowerPurple" style="left:88%;top:32%;" />
+
+    <!-- 石头 -->
+    <img src="images/stone_gray.png" alt="灰石" class="el el-stone" id="stoneGray" style="left:5%;top:78%;" />
+    <img src="images/stone_brown.png" alt="棕石" class="el el-stone" id="stoneBrown" style="left:78%;top:80%;" />
+    <img src="images/stone_dark_gray.png" alt="深灰石" class="el el-stone" id="stoneDarkGray" style="left:42%;top:86%;" />
+
+    <!-- 荷叶（装饰用） -->
+    <img src="images/lily_pad_small.png" alt="小荷叶" class="el el-lily" id="lilySmall1" style="left:22%;top:28%;" />
+    <img src="images/lily_pad_small.png" alt="小荷叶" class="el el-lily" id="lilySmall2" style="left:68%;top:68%;" />
+    <img src="images/lily_pad_large.png" alt="大荷叶" class="el el-lily" id="lilyLarge1" style="left:18%;top:65%;" />
+    <img src="images/lily_pad_large.png" alt="大荷叶" class="el el-lily el-lily-flip" id="lilyLarge2" style="left:65%;top:22%;" />
+
+    <!-- 小鱼（固定初始位置，JS驱动游动） -->
+    <img src="images/fish_light_blue.png" alt="浅蓝鱼" class="el el-fish" id="fish1" style="left:28%;top:52%;" />
+    <img src="images/fish_blue_red.png" alt="蓝红鱼" class="el el-fish" id="fish2" style="left:58%;top:35%;" />
+    <img src="images/fish_brown.png" alt="棕鱼" class="el el-fish" id="fish3" style="left:35%;top:70%;" />
+    <img src="images/fish_orange.png" alt="橙鱼" class="el el-fish" id="fish4" style="left:62%;top:60%;" />
+
+    <!-- 青蛙（固定中央，坐在荷叶上） -->
     <div class="frog-wrap interactive" id="frogWrap">
-      <img src="images/lily_pad.png" alt="荷叶座位" class="frog-seat" />
+      <img src="images/lily_pad_large.png" alt="荷叶座位" class="frog-seat" />
       <img src="images/frog_sit.png" alt="青蛙" class="frog" id="frog" />
       <div class="frog-shadow"></div>
     </div>
 
-    <!-- 思考气泡（点击青蛙弹出，在青蛙上方） -->
+    <!-- 思考气泡（点击青蛙弹出） -->
     <div class="think-bubble" id="thinkBubble">
-      <img src="images/think.png" alt="" class="think-img" />
+      <img src="images/thought_bubble.png" alt="" class="think-img" />
       <div class="think-content">
-        <img src="images/Left_arrow.png" alt="左" class="think-arrow arrow-left interactive" id="arrowLeft" />
+        <img src="images/arrow_left.png" alt="左" class="think-arrow arrow-left interactive" id="arrowLeft" />
         <a href="#" class="think-link interactive" id="thinkLink"><span class="think-icon" id="thinkIcon">🐇</span></a>
-        <img src="images/Right_arrow.png" alt="右" class="think-arrow arrow-right interactive" id="arrowRight" />
+        <img src="images/arrow_right.png" alt="右" class="think-arrow arrow-right interactive" id="arrowRight" />
       </div>
     </div>
-
-    <!-- JS 随机填充的容器 -->
-    <div id="elContainer"></div>
 
   </div>
 

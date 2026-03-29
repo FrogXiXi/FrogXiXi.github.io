@@ -1,8 +1,9 @@
 /* ========================================================
-   🐸 蛙蛙池塘 — 复古像素风
+   蛙蛙池塘 — 像素风复古主题（固定布局版）
    ======================================================== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ===== 像素渲染 ===== */
 img {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
@@ -11,14 +12,14 @@ img {
   pointer-events: none;
 }
 
-/* ===== 鼠标指针 ===== */
+/* ===== 自定义光标 ===== */
 html { cursor: url('images/cursor_frog.png') 2 2, auto; }
 body { cursor: url('images/cursor_frog.png') 2 2, auto; }
 .interactive, .el, a, button {
   cursor: url('images/cursor_frog_hover.png') 2 2, pointer;
 }
 
-/* ===== 变量 ===== */
+/* ===== CSS 变量 ===== */
 :root {
   --cream: #f0ebe3;
   --water1: #daeef6;
@@ -59,13 +60,12 @@ body {
 }
 
 /* ==========================================================
-   池塘 — 大面积占满视口
+   池塘主容器 — 桌面端用 pond.png（第2张池塘图）
    ========================================================== */
 .pond {
   position: relative;
   width: 96vw;
   max-width: 1100px;
-  /* 桌面端宽扁，视觉舒适 */
   height: calc(100vh - 110px);
   min-height: 400px;
   max-height: 700px;
@@ -74,7 +74,7 @@ body {
   overflow: hidden;
 }
 
-/* 竖屏 / 手机端切换竖版池塘 */
+/* 竖屏/移动端 切换竖版池塘 */
 @media (orientation: portrait) {
   .pond {
     background-image: url('images/pond_mobile.png');
@@ -83,129 +83,74 @@ body {
     max-height: calc(100vh - 100px);
     min-height: 280px;
   }
-  /* 竖屏放大交互元素便于点击（用 scale 属性，不覆盖 transform） */
-  .el-grass { scale: 1.5; }
-  .el-fish  { scale: 1.45; }
-  .el-flower { scale: 1.5; }
-  .el-lily  { scale: 1.3; }
+  .el-grass  { width: 8% !important; }
+  .el-fish   { width: 10% !important; }
+  .el-flower { width: 7% !important; }
+  .el-lily   { width: 8% !important; }
+  .el-stone  { width: 8% !important; }
+  .el-reed   { width: 10% !important; }
   .think-bubble { width: clamp(110px, 24%, 180px); }
   .think-arrow { width: 26px; height: 26px; }
   .think-link { width: 42px; height: 42px; }
   .think-icon { font-size: clamp(1.3rem, 4vw, 2rem); }
-  .frog-wrap { width: clamp(80px, 18%, 130px); }
-}
-
-/* ===== 像素锯齿边缘（pond.png 自带，隐藏CSS边缘） ===== */
-.edge { display: none; }
-.edge-t {
-  top: 0; left: 0; right: 0; height: 12px;
-  background: linear-gradient(to right,
-    var(--cream) 0%, var(--cream) 4%, transparent 4%, transparent 5%,
-    var(--cream) 5%, var(--cream) 6%, transparent 6%, transparent 8%,
-    var(--cream) 8%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 92%, transparent 92%, transparent 94%,
-    var(--cream) 94%, var(--cream) 95%, transparent 95%, transparent 96%,
-    var(--cream) 96%, var(--cream) 100%);
-}
-.edge-t::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
-  background: linear-gradient(to right,
-    var(--cream) 0%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 100%);
-}
-.edge-b {
-  bottom: 0; left: 0; right: 0; height: 12px;
-  background: linear-gradient(to right,
-    var(--cream) 0%, var(--cream) 4%, transparent 4%, transparent 5%,
-    var(--cream) 5%, var(--cream) 6%, transparent 6%, transparent 8%,
-    var(--cream) 8%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 92%, transparent 92%, transparent 94%,
-    var(--cream) 94%, var(--cream) 95%, transparent 95%, transparent 96%,
-    var(--cream) 96%, var(--cream) 100%);
-}
-.edge-b::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
-  background: linear-gradient(to right,
-    var(--cream) 0%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 100%);
-}
-.edge-l {
-  top: 0; bottom: 0; left: 0; width: 12px;
-  background: linear-gradient(to bottom,
-    var(--cream) 0%, var(--cream) 6%, transparent 6%, transparent 8%,
-    var(--cream) 8%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 92%, transparent 92%, transparent 94%,
-    var(--cream) 94%, var(--cream) 100%);
-}
-.edge-l::after {
-  content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 6px;
-  background: linear-gradient(to bottom,
-    var(--cream) 0%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 100%);
-}
-.edge-r {
-  top: 0; bottom: 0; right: 0; width: 12px;
-  background: linear-gradient(to bottom,
-    var(--cream) 0%, var(--cream) 6%, transparent 6%, transparent 8%,
-    var(--cream) 8%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 92%, transparent 92%, transparent 94%,
-    var(--cream) 94%, var(--cream) 100%);
-}
-.edge-r::after {
-  content: ''; position: absolute; top: 0; bottom: 0; right: 0; width: 6px;
-  background: linear-gradient(to bottom,
-    var(--cream) 0%, var(--cream) 9%, transparent 9%, transparent 91%,
-    var(--cream) 91%, var(--cream) 100%);
-}
-
-/* ===== 水面波纹线 ===== */
-.wline {
-  position: absolute; height: 2px;
-  background: rgba(255,255,255,0.15);
-  pointer-events: none; z-index: 1;
-  animation: wFloat 7s ease-in-out infinite;
-}
-.w1 { width: 18%; top: 28%; left: 12%; }
-.w2 { width: 14%; top: 52%; left: 55%; animation-delay: 2s; }
-.w3 { width: 20%; top: 70%; left: 25%; animation-delay: 3.5s; }
-.w4 { width: 12%; top: 42%; left: 70%; animation-delay: 5s; }
-@keyframes wFloat {
-  0%, 100% { transform: translateX(0); opacity: 0.15; }
-  50%      { transform: translateX(10px); opacity: 0.35; }
+  .frog-wrap  { width: clamp(80px, 18%, 130px); }
 }
 
 /* ==========================================================
-   装饰元素
+   通用装饰元素 — 所有位置固定，不随机
    ========================================================== */
-.el { position: absolute; pointer-events: auto; }
-
-/* 荷叶 */
-.el-lily { z-index: 5; transition: transform 0.3s ease; }
-.el-lily:hover { filter: brightness(1.06); }
-.el-lily.wobble { animation: wobble 0.8s ease-in-out; }
-@keyframes wobble {
-  0%   { transform: rotate(var(--rot, 0deg)); }
-  20%  { transform: rotate(calc(var(--rot, 0deg) + 8deg)); }
-  40%  { transform: rotate(calc(var(--rot, 0deg) - 6deg)); }
-  60%  { transform: rotate(calc(var(--rot, 0deg) + 4deg)); }
-  80%  { transform: rotate(calc(var(--rot, 0deg) - 2deg)); }
-  100% { transform: rotate(var(--rot, 0deg)); }
+.el {
+  position: absolute;
+  pointer-events: auto;
 }
 
-/* 水草 */
+/* ===== 芦苇 ===== */
+.el-reed {
+  width: 7%;
+  height: auto;
+  z-index: 12;
+  transform-origin: bottom center;
+  animation: reedSway 5s ease-in-out infinite;
+}
+.el-reed-flip {
+  transform: scaleX(-1);
+  animation: reedSwayFlip 5s ease-in-out infinite;
+}
+@keyframes reedSway {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(2.5deg); }
+}
+@keyframes reedSwayFlip {
+  0%, 100% { transform: scaleX(-1) rotate(0deg); }
+  50%      { transform: scaleX(-1) rotate(2.5deg); }
+}
+
+/* ===== 水草 ===== */
 .el-grass {
+  width: 6%;
+  height: auto;
   z-index: 3;
   transform-origin: bottom center;
   animation: grassSway 4.5s ease-in-out infinite;
 }
+.el-grass-flip {
+  transform: scaleX(-1);
+  animation: grassSwayFlip 4.5s ease-in-out infinite;
+}
 .el-grass.shake { animation: elShake 0.5s ease-in-out !important; }
 @keyframes grassSway {
-  0%, 100% { transform: scaleX(var(--sx, 1)) rotate(0deg); }
-  50%      { transform: scaleX(var(--sx, 1)) rotate(3deg); }
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(3deg); }
+}
+@keyframes grassSwayFlip {
+  0%, 100% { transform: scaleX(-1) rotate(0deg); }
+  50%      { transform: scaleX(-1) rotate(3deg); }
 }
 
-/* 小花 */
+/* ===== 花朵 ===== */
 .el-flower {
+  width: 5%;
+  height: auto;
   z-index: 6;
   animation: flowerBob 3.5s ease-in-out infinite;
 }
@@ -215,7 +160,7 @@ body {
   50%      { transform: translateY(-3px) rotate(2deg); }
 }
 
-/* 通用摇晃 */
+/* ===== 通用摇晃动画 ===== */
 @keyframes elShake {
   0%   { transform: rotate(0); }
   25%  { transform: rotate(12deg); }
@@ -224,48 +169,70 @@ body {
   100% { transform: rotate(0); }
 }
 
-/* 小鱼 — 平滑游动 */
-.el-fish {
-  z-index: 4;
-  transition: left 3s linear, top 3s linear, transform 0.4s ease, opacity 0.6s ease, filter 0.4s ease;
-}
-/* 点击后加速 */
-.el-fish.fast {
-  transition: left 1.5s cubic-bezier(0.2,0.7,0.3,1), top 1.5s cubic-bezier(0.2,0.7,0.3,1), transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
-}
-/* 躲在水草下 */
-.el-fish.hiding {
-  opacity: var(--hide-opacity, 0.35);
+/* ===== 石头 ===== */
+.el-stone {
+  width: 6%;
+  height: auto;
   z-index: 2;
-  filter: saturate(0.85);
-  transition: left 3s linear, top 3s linear, transform 0.4s ease, opacity 1.5s ease;
-}
-.el-fish.hiding-group {
-  --hide-opacity: 0.58;
-  filter: saturate(1) brightness(1.05);
 }
 
+/* ===== 荷叶 ===== */
+.el-lily {
+  width: 6%;
+  height: auto;
+  z-index: 5;
+  transition: transform 0.3s ease;
+}
+.el-lily-flip { transform: scaleX(-1); }
+.el-lily:hover { filter: brightness(1.06); }
+.el-lily.wobble { animation: wobble 0.8s ease-in-out; }
+@keyframes wobble {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(8deg); }
+  40%  { transform: rotate(-6deg); }
+  60%  { transform: rotate(4deg); }
+  80%  { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
 
+/* ===== 小鱼 — 平滑游动 ===== */
+.el-fish {
+  width: 7%;
+  height: auto;
+  z-index: 4;
+  transition: left 3s linear, top 3s linear, transform 0.4s ease;
+}
+/* 点击后加速逃跑 */
+.el-fish.fast {
+  transition: left 1.5s cubic-bezier(0.2,0.7,0.3,1), top 1.5s cubic-bezier(0.2,0.7,0.3,1), transform 0.3s ease;
+}
 
 /* ==========================================================
-   青蛙
+   青蛙（固定中央）
    ========================================================== */
 .frog-wrap {
-  position: absolute; z-index: 10;
-  top: 50%; left: 50%;
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   width: clamp(70px, 12%, 120px);
 }
 .frog-seat {
   position: absolute;
-  width: 150%; height: auto;
-  left: 50%; top: 55%;
+  width: 160%;
+  height: auto;
+  left: 50%;
+  top: 55%;
   transform: translate(-50%, -50%);
   z-index: -1;
   pointer-events: none;
 }
 .frog-wrap img.frog {
-  width: 100%; height: auto; display: block; pointer-events: auto;
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: auto;
 }
 .frog-wrap:hover { transform: translate(-50%, -50%) scale(1.05); }
 .frog-wrap.jumping { animation: fJump 0.5s ease-out; }
@@ -277,7 +244,11 @@ body {
   100% { transform: translate(-50%, -50%) translateY(0); }
 }
 .frog-shadow {
-  position: absolute; bottom: -4px; left: 15%; width: 70%; height: 10px;
+  position: absolute;
+  bottom: -4px;
+  left: 15%;
+  width: 70%;
+  height: 10px;
   border-radius: 50%;
   background: rgba(100,160,180,0.15);
   pointer-events: none;
@@ -287,30 +258,40 @@ body {
    思考气泡 — 青蛙上方
    ========================================================== */
 .think-bubble {
-  position: absolute; z-index: 16;
-  /* 定位在青蛙上方 */
+  position: absolute;
+  z-index: 16;
   bottom: calc(50% + clamp(40px, 7%, 68px));
   left: 50%;
   transform: translateX(-50%) scale(0);
-  opacity: 0; pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
   transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
   width: clamp(90px, 16%, 160px);
 }
 .think-bubble.show {
   transform: translateX(-50%) scale(1);
-  opacity: 1; pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
 }
 .think-img { width: 100%; height: auto; display: block; }
 .think-content {
   position: absolute;
-  top: 28%; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 2px; align-items: center; justify-content: center;
+  top: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
   width: 85%;
 }
 .think-link {
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
-  width: 34px; height: 34px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: rgba(255,255,255,0.6);
   border: 2px solid rgba(140,201,161,0.3);
@@ -320,7 +301,9 @@ body {
 .think-link:hover { transform: scale(1.15); background: rgba(140,201,161,0.25); }
 .think-link:active { transform: scale(0.9); }
 .think-arrow {
-  width: 20px; height: 20px; object-fit: contain;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
   pointer-events: auto;
   transition: transform 0.15s ease, opacity 0.15s;
   flex-shrink: 0;
@@ -341,9 +324,7 @@ body {
   user-select: none;
   transition: opacity 0.2s, transform 0.2s;
 }
-.think-icon.switching {
-  animation: iconSwitch 0.3s ease;
-}
+.think-icon.switching { animation: iconSwitch 0.3s ease; }
 @keyframes iconSwitch {
   0%   { opacity: 1; transform: scale(1); }
   40%  { opacity: 0; transform: scale(0.5); }
@@ -352,10 +333,12 @@ body {
 }
 
 /* ==========================================================
-   水波纹 + 像素泡泡
+   水波纹 + 气泡
    ========================================================== */
 .ripple {
-  position: absolute; pointer-events: none; z-index: 8;
+  position: absolute;
+  pointer-events: none;
+  z-index: 8;
   animation: ripEx 1.5s ease-out forwards;
 }
 .ripple img { width: 100%; height: 100%; image-rendering: pixelated; }
@@ -366,7 +349,9 @@ body {
 }
 
 .bubble {
-  position: absolute; pointer-events: none; z-index: 8;
+  position: absolute;
+  pointer-events: none;
+  z-index: 8;
   animation: bubUp 2.4s ease-out forwards;
 }
 .bubble img { display: block; image-rendering: pixelated; }
@@ -377,14 +362,17 @@ body {
 
 /* ===== 页脚 ===== */
 .footer {
-  text-align: center; font-family: var(--pf);
-  font-size: clamp(0.55rem, 1.5vw, 0.75rem); color: var(--text2);
-  padding: 12px; -webkit-font-smoothing: none;
+  text-align: center;
+  font-family: var(--pf);
+  font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+  color: var(--text2);
+  padding: 12px;
+  -webkit-font-smoothing: none;
   letter-spacing: 1px;
 }
 
 /* ==========================================================
-   响应式
+   响应式适配
    ========================================================== */
 @media (max-width: 768px) {
   .pond { width: 98vw; max-height: 600px; }
@@ -393,10 +381,8 @@ body {
 }
 @media (max-width: 480px) {
   .title { font-size: 0.6rem; padding: 10px 8px 6px; }
-  .pond { width: 99vw; min-height: 280px; }
+  .pond { width: 99vw; min-height: 280px; border-radius: 8px; }
   .frog-wrap { width: clamp(48px, 20%, 85px); }
   .think-bubble { width: clamp(70px, 26%, 120px); }
   .think-arrow { width: 16px; height: 16px; }
-  .edge { display: none; }
-  .pond { border-radius: 8px; }
 }
