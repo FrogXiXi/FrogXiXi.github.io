@@ -531,12 +531,12 @@
      思考气泡 — 箭头切换想法
      ========================================== */
   var thinkIdeas = [
-    { icon: '🐇', href: 'https://www.66rpg.com/game/uncheck/1686870' },
-    { icon: '🌳', href: '#' },
-    { icon: '🐸', href: '#' },
-    { icon: '🌸', href: '#' },
-    { icon: '⭐', href: '#' },
-    { icon: '🍄', href: '#' }
+    { icon: '🐇', href: 'https://www.66rpg.com/game/uncheck/1686870', notify: '🐇 去看看小兔子的冒险吧！' },
+    { icon: '🌳', href: '#', notify: '🌳 通往森林的路……'   },
+    { icon: '🐸', href: '#', notify: '🐸 蛙蛙想说点什么…'   },
+    { icon: '🌸', href: '#', notify: '🌸 花开的地方有秘密~'  },
+    { icon: '⭐', href: '#', notify: '⭐ 去追星星吧！'       },
+    { icon: '🍄', href: '#', notify: '🍄 蘑菇森林在等你~'   }
   ];
   var thinkIdx = 0;
   var thinkItemsEl = document.getElementById('thinkItems');
@@ -630,9 +630,10 @@
 
   thinkLinkCurrent.addEventListener('click', function (e) {
     e.stopPropagation();
-    if (thinkLinkCurrent.getAttribute('href') === '#') {
-      e.preventDefault();
-    }
+    e.preventDefault();
+    var idea = thinkIdeas[normalizeIdeaIndex(thinkIdx)];
+    if (idea.href === '#') return;
+    showNotifyThenGo(idea.notify, idea.href);
   });
 
   renderThinkItems();
