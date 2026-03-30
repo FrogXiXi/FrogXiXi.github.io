@@ -12,6 +12,7 @@
   var frogWrap = document.getElementById('frogWrap');
   var thinkBub = document.getElementById('thinkBubble');
   var catchCounter = document.getElementById('catchCounter');
+  var pondNotify   = document.getElementById('pondNotify');
   var thinkOpen = false;
   var catchCount = 0;
 
@@ -395,11 +396,11 @@
     }, 1500);
   }
 
-  // 随机计时：每8-15秒随机一条鱼躲水草
+  // 随机计时：每8-15秒随机一条鱼躲水草（保证至少4条可见鱼在游动）
   function scheduleHide() {
     setTimeout(function () {
       var free = fishes.filter(function (f) { return !f._hiding && !f.classList.contains('fast') && !f._grabbed; });
-      if (free.length > 0 && grasses.length > 0) {
+      if (free.length > 4 && grasses.length > 0) {
         hideInGrass(free[randInt(0, free.length - 1)]);
       }
       scheduleHide();
@@ -449,8 +450,27 @@
     });
   }
 
-  // 花朵点击摇晃
-  addShakeInteraction('.el-flower');
+  // 花朵点击摇晃（紫花7连击特殊处理）
+  var purpleFlowerEl = document.getElementById('flowerPurple');
+  var purpleClickCount = 0;
+  var purpleClickTimer = null;
+
+  addShakeInteraction('.el-flower:not(#flowerPurple)');
+
+  purpleFlowerEl.addEventListener('click', function (e) {
+    e.stopPropagation();
+    purpleFlowerEl.classList.remove('shake'); void purpleFlowerEl.offsetWidth; purpleFlowerEl.classList.add('shake');
+    purpleFlowerEl.addEventListener('animationend', function h() {
+      purpleFlowerEl.classList.remove('shake'); purpleFlowerEl.removeEventListener('animationend', h);
+    });
+    purpleClickCount++;
+    if (purpleClickTimer) clearTimeout(purpleClickTimer);
+    purpleClickTimer = setTimeout(function () { purpleClickCount = 0; }, 3000);
+    if (purpleClickCount >= 7) {
+      purpleClickCount = 0;
+      showNotifyThenGo('🌸 哇，你发现了紫花的秘密通道！', '#');
+    }
+  });
 
   // 水草点击摇晃 + 赶鱼出来
   document.querySelectorAll('.el-grass').forEach(function (el) {
@@ -641,7 +661,8 @@
   pond.addEventListener('click', function (e) {
     if (e.target.closest('.frog-wrap') ||
         e.target.closest('.think-bubble') ||
-        e.target.closest('.el')) return;
+        e.target.closest('.el') ||
+        e.target.closest('.counter-wrap')) return;
 
     // 只在椭圆水面区域内产生波纹和泡泡
     var rect = pond.getBoundingClientRect();
@@ -652,6 +673,11 @@
     createRipple(e.clientX, e.clientY);
     var n = randInt(3, 5);
     for (var b = 0; b < n; b++) createBubble(e.clientX, e.clientY, b);
+
+    // 25% 概率刷新一只新鱼
+    if (Math.random() < 0.25) {
+      spawnNewFish(pctX, pctY);
+    }
   });
 
   /* ====== 波纹 ====== */
@@ -660,7 +686,7 @@
     var el = document.createElement('div');
     el.className = 'ripple';
     var img = document.createElement('img');
-    img.src = 'images/ripple.png';
+    img.src = 'images/ripple.webp';
     img.alt = '';
     el.appendChild(img);
     el.style.left = (cx - r.left) + 'px';
@@ -669,7 +695,7 @@
     el.addEventListener('animationend', function () { el.remove(); });
   }
 
-  /* ====== 气泡（bubble.png） ====== */
+  /* ====== 气泡（bubble.webp） ====== */
   function createBubble(cx, cy, idx) {
     var r = pond.getBoundingClientRect();
     var s = randInt(10, 20);
@@ -679,7 +705,7 @@
     el.style.top = (cy - r.top + rand(-8, 8)) + 'px';
     el.style.animationDelay = (idx * 0.12) + 's';
     var img = document.createElement('img');
-    img.src = 'images/bubble.png';
+    img.src = 'images/bubble.webp';
     img.alt = '';
     img.style.width = s + 'px';
     img.style.height = s + 'px';
@@ -687,6 +713,77 @@
     el.appendChild(img);
     pond.appendChild(el);
     el.addEventListener('animationend', function () { el.remove(); });
+  }
+
+  /* ====== 通知后跳转 ====== */
+  function showNotifyThenGo(msg, url) {
+    pondNotify.textContent = msg;
+    pondNotify.classList.add('show');
+    setTimeout(function () {
+      pondNotify.classList.remove('show');
+      if (url && url !== '#') {
+        window.location.href = url;
+      }
+    }, 1800);
+  }
+
+  /* ====== 动态生鱼 ====== */
+  var fishImages = [
+    'images/fish_light_blue.webp',
+    'images/fish_blue_red.webp',
+    'images/fish_brown.webp',
+    'images/fish_orange.webp'
+  ];
+  var fishNames = ['浅蓝鱼', '蓝红鱼', '棕鱼', '橙鱼'];
+  var spawnId = 100;
+
+  function initFishInteraction(fish) {
+    fish.addEventListener('pointerdown', function (e) {
+      if (fish.classList.contains('hiding')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      activeFishDrag = {
+        fish: fish,
+        pointerId: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        dragging: false
+      };
+      if (fish.setPointerCapture) {
+        try { fish.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+    });
+  }
+
+  function spawnNewFish(pctX, pctY) {
+    var idx = randInt(0, fishImages.length - 1);
+    var fish = document.createElement('img');
+    fish.src = fishImages[idx];
+    fish.alt = fishNames[idx];
+    fish.className = 'el el-fish';
+    fish.id = 'fish' + (++spawnId);
+    fish.draggable = false;
+
+    // 放置在点击位置附近
+    var size = { w: 7, h: 4.2 };
+    var pos = fitFishInsideWater(pctX - size.w / 2, pctY - size.h / 2, size.w, size.h);
+    fish.style.left = pos.x + '%';
+    fish.style.top = pos.y + '%';
+
+    var dir = Math.random() > 0.5 ? 1 : -1;
+    fish.style.setProperty('--fish-dir', dir);
+    fish.style.transform = 'scaleX(' + dir + ')';
+    fish.dataset.dir = String(dir);
+
+    pond.appendChild(fish);
+    fishes.push(fish);
+    initFishInteraction(fish);
+
+    // 超过 30 条非躲藏鱼 → 提示跳转
+    var visibleCount = fishes.filter(function (f) { return !f._hiding; }).length;
+    if (visibleCount > 30) {
+      showNotifyThenGo('🐸 池塘里的鱼太多啦！快去看看~', '#');
+    }
   }
 
 })();
