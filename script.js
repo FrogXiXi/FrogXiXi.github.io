@@ -536,7 +536,7 @@
     { icon: '🐸', href: '#', notify: '🐸 蛙蛙想说点什么…'   },
     { icon: '🌸', href: '#', notify: '🌸 花开的地方有秘密~'  },
     { icon: '⭐', href: '#', notify: '⭐ 去追星星吧！'       },
-    { icon: '🍄', href: '#', notify: '🍄 蘑菇森林在等你~'   }
+    { icon: '🍄', href: 'https://lijiangyu010.github.io/zzhappy_day/', notify: '🍄 蘑菇森林在等你~'   }
   ];
   var thinkIdx = 0;
   var thinkItemsEl = document.getElementById('thinkItems');
