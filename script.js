@@ -468,7 +468,8 @@
     purpleClickTimer = setTimeout(function () { purpleClickCount = 0; }, 3000);
     if (purpleClickCount >= 7) {
       purpleClickCount = 0;
-      showNotifyThenGo('🌸 哇，你发现了魔法的秘密通道！', 'https://lijiangyu010.github.io/tarot/');
+      showNotifyThenGo('🌸 哇，你发现了魔法的秘密通道！', 'https://frogxixi.github.io/Taroti/');
+      //showNotifyThenGo('🌸 哇，你发现了魔法的秘密通道！', 'https://lijiangyu010.github.io/tarot/');
     }
   });
 
